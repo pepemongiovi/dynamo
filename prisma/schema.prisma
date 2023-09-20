@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type Address {
+  zipcode        String
+  state          String
+  city           String
+  district       String
+  address        String
+  number         String
+  complement     String?
+}
+
+model User {
+  id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        
+  image          String?         
+  email          String                  @unique
+  phone          String                  @unique
+  documentNumber String                  @unique
+  zipcode        String        
+  password       String        
+  products       Product[]         
+  orders         Order[]         
+  createdAt      DateTime                @default(now())
+}    
+
+model Product {
+  id            String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String                 
+  userId        String                   @db.ObjectId
+  user          User                     @relation(fields: [userId], references: [id])
+  variants      ProductVariant[]         
+  createdAt     DateTime                 @default(now())
+}
+ 
+model Offer {
+  id            String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  count         Int
+  variants      OfferProductVariant[]
+  orderIds      String[]                 @db.ObjectId
+  orders        Order[]                  @relation(fields: [orderIds], references: [id])
+}
+
+model Order {    
+  id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name           String    
+  phone          String 
+  offerIds       String[]                @db.ObjectId
+  offers         Offer[]                 @relation(fields: [offerIds], references: [id])
+  userId         String                  @db.ObjectId
+  user           User                    @relation(fields: [userId], references: [id])
+  address        Address     
+  date           DateTime      
+  createdAt      DateTime                @default(now())
+}
+
+
+type ProductVariant {
+  count         Int
+  color         String
+  size          String
+}
+
+type OfferProductVariant  {
+  productId     String                   @db.ObjectId
+  count         Int
+  color         String
+  size          String
+}
+
+
+
+

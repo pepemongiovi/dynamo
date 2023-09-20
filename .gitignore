@@ -1,0 +1,9 @@
+/.next/
+/.swc/
+/node_modules/
+
+/.env.*local
+/yarn.dev.log
+.vscode/
+/test-results/
+

@@ -1,0 +1,14 @@
+services:
+  web:
+    build:
+      dockerfile: dev.Dockerfile
+    environment:
+      DATABASE_URL: mongodb+srv://pepemongiovi:130897@db.zpccdz9.mongodb.net/cluster0retryWrites=true&w=majority     
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app/:cached
+      - /app/.next/
+      - /app/node_modules/
+volumes:
+  data:
