@@ -10,7 +10,13 @@ export default function useNewOrder() {
 
   const [newVariantModalOpened, setNewVariantModalOpened] = useState(false)
 
-  const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
+  const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([
+    {
+      id: '1',
+      name: 'Calcinha modeladora',
+      offers: [{id: '1', name: 'Compre 1 leve 2'}]
+    }
+  ])
 
   const {
     handleSubmit,
@@ -54,8 +60,6 @@ export default function useNewOrder() {
 
   const handleNewVariant = (newVariant: Variant) => {
     const {variants} = getValues()
-    console.log('oldVariants: ', variants)
-    console.log('new variants: ', [...variants, newVariant])
     setValue('variants', [...variants, newVariant])
     setNewVariantModalOpened(false)
   }

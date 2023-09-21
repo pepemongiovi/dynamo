@@ -2,6 +2,7 @@ import {FC} from 'react'
 import {Control} from 'react-hook-form'
 import FormInput from './FormInput'
 import {InputProps} from '@mui/material'
+import {getPlaceholder} from '@/utils/format'
 
 type EmailFormInputProps = InputProps & {
   control: Control<any>
@@ -22,6 +23,7 @@ const EmailFormInput: FC<EmailFormInputProps> = ({control, name, label}) => {
       label={label || 'Email'}
       name={name || 'email'}
       type="email"
+      placeholder="Digite seu email..."
       control={control}
       rules={{
         validate: (value) => {

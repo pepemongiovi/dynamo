@@ -3,6 +3,7 @@ import {FC, useState} from 'react'
 import FormInput from './FormInput'
 import {Control} from 'react-hook-form'
 import {Visibility, VisibilityOff} from '@mui/icons-material'
+import {getPlaceholder} from '@/utils/format'
 
 type PasswordFormInputProps = InputProps & {
   name?: string
@@ -31,6 +32,7 @@ const PasswordFormInput: FC<PasswordFormInputProps> = ({
       label={label || 'Password'}
       name={name || 'password'}
       type={showPassword ? 'text' : 'password'}
+      placeholder="Digite sua senha..."
       control={control}
       endAdornment={
         <Stack

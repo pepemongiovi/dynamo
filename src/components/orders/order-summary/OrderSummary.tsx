@@ -8,11 +8,9 @@ const OrderSummary = () => {
   const {onSubmit} = useOrderSummary()
 
   return (
-    <Tile sx={{width: '40%', minWidth: 250, height: '100%'}} >
-
-      <Stack sx={{ flex: 1, minHeight: 500}}>
-      <Typography fontSize={32}>Agendar pedido</Typography>
-
+    <Tile sx={{width: '40%', minWidth: 250, height: '100%', pb: 3, pt: 1.5}}>
+      <Stack sx={{flex: 1, minHeight: 500}}>
+        <Typography fontSize={32}>Agendar pedido</Typography>
       </Stack>
       <Button sx={{mt: 4}} onClick={onSubmit}>
         Agendar Pedido

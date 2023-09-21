@@ -20,9 +20,10 @@ const NewVariantModal: FC<NewVariantModalProps> = ({
   onClose,
   onSubmit
 }) => {
-  const {control, submit, selectedProductId} = useNewVariantModal({
-    onSubmit
-  })
+  const {control, selectedOfferId, selectedProductId, submit} =
+    useNewVariantModal({
+      onSubmit
+    })
 
   const selectedProduct = useMemo(
     () => products.find((product: Product) => product.id === selectedProductId),
@@ -74,24 +75,26 @@ const NewVariantModal: FC<NewVariantModalProps> = ({
             )}
           </Grid>
 
-          <Grid container spacing={2} width="100%">
-            <Grid item xs={6} sx={{pl: '0px !important'}}>
-              <FormInput
-                name="size"
-                control={control}
-                label="Tamanho"
-                placeholder={getPlaceholder('tamanho')}
-              />
+          {selectedOfferId && (
+            <Grid container spacing={2} width="100%">
+              <Grid item xs={6} sx={{pl: '0px !important'}}>
+                <FormInput
+                  name="size"
+                  control={control}
+                  label="Tamanho"
+                  placeholder={getPlaceholder('tamanho')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <FormInput
+                  name="color"
+                  control={control}
+                  label="Cor"
+                  placeholder={getPlaceholder('cor')}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <FormInput
-                name="color"
-                control={control}
-                label="Cor"
-                placeholder={getPlaceholder('cor')}
-              />
-            </Grid>
-          </Grid>
+          )}
         </Stack>
       </form>
     </Modal>

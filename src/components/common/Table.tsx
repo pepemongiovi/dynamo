@@ -345,6 +345,51 @@ export default function Table() {
     [order, orderBy, page, rowsPerPage]
   )
 
+  // const order: any = {
+  //   phone: '312421121',
+  //   offers: [
+  //     {
+  //       name: 'Compre 1 leve 2',
+  //       count: 2,
+  //       price: 99.9,
+  //       variants: [
+  //         {
+  //           productId: 'p1',
+  //           count: 1,
+  //           variantId: 'var_1'
+  //         },
+  //         {
+  //           productId: 'p1',
+  //           count: 1,
+  //           variantId: 'var_2'
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       name: 'Shorte + 2 Calcinha',
+  //       count: 3,
+  //       price: 99.9,
+  //       produtos: [
+  //         {
+  //           productId: 'id_shorte',
+  //           count: 1,
+  //           variantId: 'var_1'
+  //         },
+  //         {
+  //           productId: 'id_calcinha',
+  //           count: 1,
+  //           variantId: 'var_1'
+  //         },
+  //         {
+  //           productId: 'id_calcinha',
+  //           count: 1,
+  //           variantId: 'var_5'
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }
+
   return (
     <Box sx={{width: '100%'}}>
       <Paper sx={{width: '100%', mb: 2}}>

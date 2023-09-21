@@ -28,7 +28,10 @@ const useNewVariantModal = ({onSubmit}: UseNewVariantModalProps) => {
     }
   })
 
+  console.log(getValues())
+
   const selectedProductId = watch('productId')
+  const selectedOfferId = watch('offerId')
 
   const submit = useCallback(
     loader.action(async () => {
@@ -45,6 +48,7 @@ const useNewVariantModal = ({onSubmit}: UseNewVariantModalProps) => {
   return {
     control,
     selectedProductId,
+    selectedOfferId,
     submit: handleSubmit(submit)
   }
 }

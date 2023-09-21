@@ -39,19 +39,19 @@ model Product {
   variants      ProductVariant[]         
   createdAt     DateTime                 @default(now())
 }
- 
+
 model Offer {
   id            String                   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   count         Int
-  variants      OfferProductVariant[]
+  variants      OfferProductVariant[]  //mudar pra produtos
   orderIds      String[]                 @db.ObjectId
   orders        Order[]                  @relation(fields: [orderIds], references: [id])
+  price         Float
 }
 
 model Order {    
   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
-  name           String    
   phone          String 
   offerIds       String[]                @db.ObjectId
   offers         Offer[]                 @relation(fields: [offerIds], references: [id])
@@ -62,11 +62,11 @@ model Order {
   createdAt      DateTime                @default(now())
 }
 
-
 type ProductVariant {
   count         Int
-  color         String
-  size          String
+  color         String?
+  size          String?
+  type          String?
 }
 
 type OfferProductVariant  {

@@ -31,9 +31,6 @@ export default createRouter().merge(
             name: 'Calcinha modeladora',
             userId,
             variants: [{color: 'Preto', size: 'M', count: 2}]
-          },
-          include: {
-            user: true
           }
         })
 
