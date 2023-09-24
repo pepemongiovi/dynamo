@@ -40,11 +40,16 @@ model Product {
   createdAt     DateTime                 @default(now())
 }
 
+type ProductAmount {
+  productId     String                   @db.ObjectId
+  amount        Int
+}
+
 model Order {    
   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
   phone          String 
   offerIds       String[]                @db.ObjectId
-  offers         Offer[]                 @relation(fields: [offerIds], references: [id])
+  offers         OfferDetails[]            
   userId         String                  @db.ObjectId
   user           User                    @relation(fields: [userId], references: [id])
   address        Address     
@@ -52,19 +57,21 @@ model Order {
   createdAt      DateTime                @default(now())
 }
 
+model OfferDetails {
+  id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+  offerId        String
+  variantIds     VariantAmount[]
+  orderId        String                    @db.ObjectId
+  order          Order                     @relation(fields: [orderId], references: [id])
+}
+
 
 model Offer {
   id            String                   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  variants      OfferVariant[]  
-  orderIds      String[]                 @db.ObjectId
-  orders        Order[]                  @relation(fields: [orderIds], references: [id])
+  products      ProductAmount[]  
 }
 
-type OfferVariant {
-  variantId     String                   @db.ObjectId
-  amount        Int
-}
 
 model Variant {
   id                   String            @id @default(auto()) @map("_id") @db.ObjectId
@@ -76,6 +83,12 @@ model Variant {
   size                 String?
   type                 String?
 }
+
+type VariantAmount {
+  variantId     String                   @db.ObjectId
+  amount        Int
+}
+
 
 
 

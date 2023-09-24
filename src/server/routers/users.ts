@@ -2,6 +2,49 @@ import {z} from 'zod'
 import createRouter, {createProtectedRouter} from '../createRouter'
 import db from '../db'
 
+// model Order {
+//   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+//   phone          String
+//   offerIds       String[]                @db.ObjectId
+//   offers         OfferDetails[]
+//   userId         String                  @db.ObjectId
+//   user           User                    @relation(fields: [userId], references: [id])
+//   address        Address
+//   date           DateTime
+//   createdAt      DateTime                @default(now())
+// }
+
+// model OfferDetails {
+//   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+//   offerId        String
+//   variantIds     String[]
+//   orderId        String                    @db.ObjectId
+//   order          Order                     @relation(fields: [orderId], references: [id])
+// }
+
+// model Offer {
+//   id            String                   @id @default(auto()) @map("_id") @db.ObjectId
+//   name          String
+//   products      OfferProduts[]
+
+// }
+
+// type OfferProduts {
+//   productId     String                   @db.ObjectId
+//   amount        Int
+// }
+
+// model Variant {
+//   id                   String            @id @default(auto()) @map("_id") @db.ObjectId
+//   productId            String            @db.ObjectId
+//   product              Product           @relation(fields: [productId], references: [id])
+//   amountAvailable      Int
+//   price                Float
+//   color                String?
+//   size                 String?
+//   type                 String?
+// }
+
 export default createRouter().merge(
   createProtectedRouter()
     // .query('redirect', {
@@ -71,31 +114,16 @@ export default createRouter().merge(
         const offer = await db.offer.create({
           data: {
             name: 'Compre 2 leve 3',
-            variants: product.variants
-              .map((variant) => ({
-                variantId: variant.id,
-                amount: 1
-              }))
-              .slice(0, 2)
+            products: [{productId: product.id, amount: 2}]
           }
         })
 
         const other_offer = await db.offer.create({
           data: {
             name: '(2) Calcinha modeladora + (1) Shorte empina bumbum',
-            variants: [
-              ...other_product.variants
-                .map((variant) => ({
-                  variantId: variant.id,
-                  amount: 1
-                }))
-                .slice(0, 1),
-              ...product.variants
-                .map((variant) => ({
-                  variantId: variant.id,
-                  amount: 2
-                }))
-                .slice(0, 1)
+            products: [
+              {productId: product.id, amount: 2},
+              {productId: other_product.id, amount: 1}
             ]
           }
         })
@@ -105,7 +133,6 @@ export default createRouter().merge(
         const order = await db.order.create({
           data: {
             userId,
-            offerIds: [offer.id, other_offer.id],
             address: {
               address: 'Av. Oceano Pacífico',
               city: 'Campina Grande',
@@ -116,7 +143,37 @@ export default createRouter().merge(
               complement: 'Do lado da quadra'
             },
             date: new Date(),
-            phone: '83999972096'
+            phone: '83999972096',
+            offers: {
+              create: [
+                {
+                  offerId: offer.id,
+                  variantIds: product.variants
+                    .map((variant) => ({
+                      variantId: variant.id,
+                      amount: 2
+                    }))
+                    .slice(0, 1)
+                },
+                {
+                  offerId: other_offer.id,
+                  variantIds: [
+                    ...other_product.variants
+                      .map((variant) => ({
+                        variantId: variant.id,
+                        amount: 1
+                      }))
+                      .slice(0, 1),
+                    ...product.variants
+                      .map((variant) => ({
+                        variantId: variant.id,
+                        amount: 2
+                      }))
+                      .slice(0, 1)
+                  ]
+                }
+              ]
+            }
           }
         })
 
