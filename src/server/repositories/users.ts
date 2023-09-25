@@ -1,11 +1,10 @@
 import db from '../db'
 import {hash} from 'argon2'
-import {IGetUserByEmail, ISignUp} from '@/validation/auth'
+import {IGetUserByEmail, IGetUserByUserId, ISignUp} from '@/validation/auth'
 import {Prisma} from '@prisma/client'
 
 export const createNewUser = async (input: ISignUp) => {
-  const {email, name, phone, documentNumber, zipcode, password} =
-    input
+  const {email, name, phone, documentNumber, zipcode, password} = input
 
   const userExists = await db.user.findFirst({
     where: {OR: [{email}, {documentNumber}]}
@@ -38,6 +37,17 @@ export const createNewUser = async (input: ISignUp) => {
 export const findUserByEmail = async (input: IGetUserByEmail) => {
   const user = await db.user.findFirst({
     where: {email: input.email}
+  })
+
+  return {
+    status: 200,
+    result: user
+  }
+}
+
+export const findUserById = async (input: IGetUserByUserId) => {
+  const user = await db.user.findFirst({
+    where: {id: input.userId}
   })
 
   return {

@@ -37,8 +37,6 @@ const NewOrder: FC = () => {
     [variants]
   )
 
-  console.log('real variants', variants)
-
   return (
     <Layout gap={5} direction="row">
       <OrderSummary />

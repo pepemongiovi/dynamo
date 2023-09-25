@@ -16,6 +16,11 @@ export const getUserByEmailSchema = z.object({
   email: z.string().email()
 })
 
+export const getUserByUserIdSchema = z.object({
+  userId: z.string()
+})
+
 export type ILogin = z.infer<typeof loginSchema>
 export type ISignUp = z.infer<typeof signUpSchema>
-export type IGetUserByEmail = z.infer<typeof signUpSchema>
+export type IGetUserByEmail = z.infer<typeof getUserByEmailSchema>
+export type IGetUserByUserId = z.infer<typeof getUserByUserIdSchema>

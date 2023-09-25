@@ -36,7 +36,7 @@ export default function useSignUpForm() {
           callbackUrl: '/dashboard'
         }).catch(console.error)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }),
     []

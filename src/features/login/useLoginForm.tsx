@@ -34,7 +34,7 @@ export default function useLoginForm() {
           console.info('Error: ', error)
         })
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }),
     []

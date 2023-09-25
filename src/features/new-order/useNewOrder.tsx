@@ -1,22 +1,21 @@
 import useLoader from '@/hooks/useLoader'
 import {useCallback, useEffect, useState} from 'react'
 import {useForm as useFormHook} from 'react-hook-form'
-import {signIn} from 'next-auth/react'
+import {signIn, useSession} from 'next-auth/react'
 import {Variant, shiftOpts, statesOpts} from '@/types/utils'
-import {Offer, Product} from '@prisma/client'
+import {Offer, Product, ProductSubscription} from '@prisma/client'
+import trpc from '@/utils/trpc'
 
 export default function useNewOrder() {
+  const {data} = useSession()
+
   const {isLoading, ...loader} = useLoader()
 
   const [newVariantModalOpened, setNewVariantModalOpened] = useState(false)
 
-  const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([
-    {
-      id: '1',
-      name: 'Calcinha modeladora',
-      offers: [{id: '1', name: 'Compre 1 leve 2'}]
-    }
-  ])
+  const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
+
+  const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
 
   const {
     handleSubmit,
@@ -79,11 +78,26 @@ export default function useNewOrder() {
       try {
         clearErrors()
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }),
     []
   )
+
+  const loadAllProducts = async () => {
+    if (data) {
+      const res = await getUserSubscriptions.mutateAsync({
+        userId: data.user.id
+      })
+      if (res.subscriptions) {
+        setProducts(res.subscriptions)
+      }
+    }
+  }
+
+  useEffect(() => {
+    loadAllProducts()
+  }, [data])
 
   return {
     control,
