@@ -7,6 +7,6 @@ export const getUserById = async (input: IGetUserByUserId) => {
     return user
   } catch (error) {
     console.error(error)
-    return {errors: String(error), data: null}
+    return {errors: String(error), user: null}
   }
 }

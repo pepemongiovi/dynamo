@@ -31,7 +31,7 @@ export const createNewUser = async (input: ISignUp) => {
   return {
     status: 201,
     message: 'Account created successfully',
-    result: user
+    user
   }
 }
 export const findUserByEmail = async (input: IGetUserByEmail) => {
@@ -41,7 +41,7 @@ export const findUserByEmail = async (input: IGetUserByEmail) => {
 
   return {
     status: 200,
-    result: user
+    user
   }
 }
 
@@ -52,6 +52,6 @@ export const findUserById = async (input: IGetUserByUserId) => {
 
   return {
     status: 200,
-    result: user
+    user
   }
 }

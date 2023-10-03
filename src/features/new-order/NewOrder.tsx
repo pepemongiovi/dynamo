@@ -9,11 +9,9 @@ import SelectInput from '@/components/common/SelectInput'
 import TagSelector from '@/components/common/TagSelector'
 import Modal from '@/components/common/Modal'
 import Tile from '@/components/common/Tile'
-import NewVariantModal from '@/components/products/NewVariantModal'
+import SelectOfferModal from '@/components/offers/SelectOfferModal'
 import OrderSummary from '@/components/orders/order-summary/OrderSummary'
 import {getPlaceholder} from '@/utils/format'
-import {Variant} from '@/types/utils'
-import {Product} from '@prisma/client'
 import DateFormInput from '@/components/common/DateFormInput'
 
 const NewOrder: FC = () => {
@@ -21,22 +19,17 @@ const NewOrder: FC = () => {
     control,
     shiftOpts,
     statesOpts,
-    variants,
+    offers,
     products,
-    newVariantModalOpened,
-    setNewVariantModalOpened,
-    handleNewVariant,
-    handleRemoveVariant,
-    getVariantName,
-    setValue,
-    getValues
+    newOfferModalOpened,
+    setNewOfferModalOpened,
+    handleNewOffer,
+    handleRemoveOffer,
+    onSubmit
   } = useNewOrder()
 
-  const variantTags = useMemo(
-    () => variants.map((variant) => getVariantName(variant)),
-    [variants]
-  )
-
+  const offersTags = useMemo(() => offers.map((offer) => offer), [offers])
+  console.log(offers)
   return (
     <Layout gap={5} direction="row">
       <OrderSummary />
@@ -163,14 +156,14 @@ const NewOrder: FC = () => {
 
         <TagSelector
           addBtnLabel="Nova Variante"
-          openModal={() => setNewVariantModalOpened(true)}
-          onRemove={handleRemoveVariant}
-          tags={variantTags}
+          openModal={() => setNewOfferModalOpened(true)}
+          onRemove={handleRemoveOffer}
+          tags={offers.map((offer) => offer.name)}
         />
-        <NewVariantModal
-          open={newVariantModalOpened}
-          onClose={() => setNewVariantModalOpened(false)}
-          onSubmit={handleNewVariant}
+        <SelectOfferModal
+          open={newOfferModalOpened}
+          onClose={() => setNewOfferModalOpened(false)}
+          onSubmit={handleNewOffer}
           products={products}
         />
       </Stack>

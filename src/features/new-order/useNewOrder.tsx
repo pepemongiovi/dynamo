@@ -2,16 +2,36 @@ import useLoader from '@/hooks/useLoader'
 import {useCallback, useEffect, useState} from 'react'
 import {useForm as useFormHook} from 'react-hook-form'
 import {signIn, useSession} from 'next-auth/react'
-import {Variant, shiftOpts, statesOpts} from '@/types/utils'
-import {Offer, Product, ProductSubscription} from '@prisma/client'
+import {shiftOpts, statesOpts} from '@/types/utils'
+import {
+  Offer,
+  OfferDetails,
+  Product,
+  ProductSubscription,
+  Variant
+} from '@prisma/client'
 import trpc from '@/utils/trpc'
+
+export const getVariantLabel = (variant: Variant, productName: string) => {
+  const sizeLabel = `Tamanho ${variant.size}`
+  const colorLabel = `${variant.color}`
+
+  const variantLabel =
+    variant.size && variant.color
+      ? `${sizeLabel}: ${colorLabel}`
+      : variant.size
+      ? sizeLabel
+      : colorLabel
+
+  return `${productName} - ${variantLabel}`
+}
 
 export default function useNewOrder() {
   const {data} = useSession()
 
   const {isLoading, ...loader} = useLoader()
 
-  const [newVariantModalOpened, setNewVariantModalOpened] = useState(false)
+  const [newOfferModalOpened, setNewOfferModalOpened] = useState(false)
 
   const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
 
@@ -28,7 +48,11 @@ export default function useNewOrder() {
     watch
   } = useFormHook({
     defaultValues: {
-      variants: [] as Variant[],
+      offers: [] as {
+        name: string
+        variantsNames: string[]
+        details: Omit<OfferDetails, 'id' | 'orderId'>
+      }[],
       name: '',
       phone: '',
       zipcode: '',
@@ -43,34 +67,26 @@ export default function useNewOrder() {
     }
   })
 
-  const variants = watch('variants')
+  const offers = watch('offers')
 
-  const getVariantName = ({productId, offerId, color, size}: Variant) => {
-    const product = products.find(
-      (product: Product) => product.id === productId
-    )
-    const offer = product?.offers.find((offer) => offer.id === offerId)
-
-    const firstPart = `${offer?.name} - ${product?.name}`
-    const secondPart = color || size ? `(${`${color} `}${size})` : ''
-
-    return `${firstPart} ${secondPart}`
+  const handleNewOffer = (
+    offer: Omit<OfferDetails, 'id' | 'orderId'>,
+    offerName: string,
+    variantsNames: string[]
+  ) => {
+    setValue('offers', [
+      ...offers,
+      {name: offerName, variantsNames, details: offer}
+    ])
   }
 
-  const handleNewVariant = (newVariant: Variant) => {
-    const {variants} = getValues()
-    setValue('variants', [...variants, newVariant])
-    setNewVariantModalOpened(false)
-  }
-
-  const handleRemoveVariant = (tag: string) => {
-    const {variants} = getValues()
-    setValue(
-      'variants',
-      variants.filter((variant) => {
-        return getVariantName(variant) !== tag
-      })
-    )
+  const handleRemoveOffer = (tag: string) => {
+    // setValue(
+    //   'offers',
+    //   offers.filter((offer) => {
+    //     return getVariantName(variant) !== tag
+    //   })
+    // )
   }
 
   const onSubmit = useCallback(
@@ -90,7 +106,7 @@ export default function useNewOrder() {
         userId: data.user.id
       })
       if (res.subscriptions) {
-        setProducts(res.subscriptions)
+        setProducts(res.subscriptions as any)
       }
     }
   }
@@ -103,20 +119,12 @@ export default function useNewOrder() {
     control,
     shiftOpts,
     statesOpts,
-    errors,
-    isLoading,
-    isValid,
-    variants,
+    offers,
     products,
-    newVariantModalOpened,
-    setNewVariantModalOpened,
-    handleNewVariant,
-    handleRemoveVariant,
-    onSubmit: handleSubmit(onSubmit),
-    getValues,
-    setValue,
-    setError,
-    clearErrors,
-    getVariantName
+    newOfferModalOpened,
+    setNewOfferModalOpened,
+    handleNewOffer,
+    handleRemoveOffer,
+    onSubmit: handleSubmit(onSubmit)
   }
 }

@@ -8,6 +8,7 @@ import users from './users'
 import products from './products'
 import subscriptions from './subscriptions'
 import offers from './offers'
+import variants from './variants'
 
 const environment = requireEnv('ENVIRONMENT')
 
@@ -47,6 +48,7 @@ const router = createRouter()
   .merge('products.', products)
   .merge('subscriptions.', subscriptions)
   .merge('offers.', offers)
+  .merge('variants.', variants)
 
 export type AppRouter = typeof router
 

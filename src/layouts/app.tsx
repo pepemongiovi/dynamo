@@ -15,7 +15,9 @@ const theme = createTheme({
   palette: {
     background: {default: '#f2f2f2'},
     primary: {main: '#474787'},
+    disabled: 'rgba(0, 0, 0, 0.3)',
     secondary: {main: '#2C2C54'},
+    placeholder: '#595959',
     danger: {
       main: '#f44336',
       hover: '#ffdddd'
@@ -25,7 +27,7 @@ const theme = createTheme({
       hover: '#ffffcc'
     },
     success: {
-      main: '#ddffdd',
+      main: '#28a745',
       hover: '#4CAF50'
     },
     info: {

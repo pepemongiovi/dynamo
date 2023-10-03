@@ -8,6 +8,6 @@ export const findProductsByUserId = async (userId: string) => {
 
   return {
     status: 200,
-    result: user
+    products: user?.products
   }
 }

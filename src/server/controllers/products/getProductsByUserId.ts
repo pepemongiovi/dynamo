@@ -2,10 +2,10 @@ import {findProductsByUserId} from '@/server/repositories/products'
 
 export const getProductsByUserId = async (userId: string) => {
   try {
-    const user = await findProductsByUserId(userId)
-    return user
+    const products = await findProductsByUserId(userId)
+    return products
   } catch (error) {
     console.error(error)
-    return {errors: String(error), data: null}
+    return {errors: String(error), products: null}
   }
 }

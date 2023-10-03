@@ -16,6 +16,6 @@ export const getSubscriptionsByUserId = async (userId: string) => {
     return result
   } catch (error) {
     console.error(error)
-    return {errors: String(error), data: null}
+    return {errors: String(error), subscriptions: null}
   }
 }

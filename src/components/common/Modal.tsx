@@ -4,27 +4,34 @@ import {
   Typography,
   Box,
   ModalProps as MuiModalProps,
-  Stack
+  Stack,
+  SxProps
 } from '@mui/material'
 import {Close} from '@mui/icons-material'
 import Button from './Button'
 
 export type ModalProps = MuiModalProps & {
   title?: string
+  disabled?: boolean
   open: boolean
   width?: number
-  onClose: () => void
+  btnLabel?: string
+  btnSx?: SxProps
   children: React.ReactNode
+  onClose: () => void
   onSubmit?: () => void
 }
 
 const Modal: React.FC<ModalProps> = ({
   open,
-  onClose,
   title,
   children,
   width,
+  btnLabel,
+  disabled,
+  btnSx,
   onSubmit,
+  onClose,
   ...props
 }) => {
   const rootRef = React.useRef<HTMLDivElement>(null)
@@ -76,7 +83,11 @@ const Modal: React.FC<ModalProps> = ({
             <Button onClick={handleClose} danger>
               Cancelar
             </Button>
-            {onSubmit && <Button type="submit">Ok</Button>}
+            {onSubmit && (
+              <Button type="submit" disabled={disabled} sx={btnSx}>
+                {btnLabel || 'Confirmar'}
+              </Button>
+            )}
           </Stack>
         </Stack>
       </form>

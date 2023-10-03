@@ -109,7 +109,6 @@ const SelectInput: FC<SelectInputProps> = ({
                 '& .Mui-disabled': {WebkitTextFillColor: '#71797E !important'},
                 '& legend': {display: 'none'},
                 '& fieldset': {top: 0},
-                mb: -2,
                 ...sx
               }}
               displayEmpty
