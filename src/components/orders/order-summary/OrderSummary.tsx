@@ -4,8 +4,8 @@ import Tile from '../../common/Tile'
 import useOrderSummary from './useOrderSummary'
 import Button from '@/components/common/Button'
 
-const OrderSummary = () => {
-  const {onSubmit} = useOrderSummary()
+const OrderSummary = ({onSubmit}: {onSubmit: () => void}) => {
+  const {handleSubmit} = useOrderSummary()
 
   return (
     <Tile sx={{width: '40%', minWidth: 250, height: '100%', pb: 3, pt: 1.5}}>

@@ -14,10 +14,11 @@ const theme = createTheme({
   },
   palette: {
     background: {default: '#f2f2f2'},
-    primary: {main: '#474787'},
+    primary: {main: '#474787', hover: 'rgba(71, 71, 135, 0.25)'},
     disabled: 'rgba(0, 0, 0, 0.3)',
     secondary: {main: '#2C2C54'},
-    placeholder: '#595959',
+    placeholder: 'rgba(0, 0, 0, 0.38)',
+    grey: {main: '#595959'},
     danger: {
       main: '#f44336',
       hover: '#ffdddd'

@@ -11,6 +11,7 @@ import {
   Variant
 } from '@prisma/client'
 import trpc from '@/utils/trpc'
+import {OfferData} from '@/components/offers/SelectOfferModal'
 
 export const getVariantLabel = (variant: Variant, productName: string) => {
   const sizeLabel = `Tamanho ${variant.size}`
@@ -32,10 +33,16 @@ export default function useNewOrder() {
   const {isLoading, ...loader} = useLoader()
 
   const [newOfferModalOpened, setNewOfferModalOpened] = useState(false)
+  const [editingOfferIdx, setEditingOfferIdx] = useState<number | null>(null)
 
   const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
 
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
+
+  const onEditOffer = (offerIdx: number) => {
+    setEditingOfferIdx(offerIdx)
+    setNewOfferModalOpened(true)
+  }
 
   const {
     handleSubmit,
@@ -48,20 +55,18 @@ export default function useNewOrder() {
     watch
   } = useFormHook({
     defaultValues: {
-      offers: [] as {
-        name: string
-        variantsNames: string[]
-        details: Omit<OfferDetails, 'id' | 'orderId'>
-      }[],
+      offers: [] as OfferData[],
       name: '',
       phone: '',
-      zipcode: '',
-      address: '',
-      number: '',
-      district: '',
-      city: '',
-      state: '',
-      complement: '',
+      addressInfo: {
+        zipcode: '',
+        address: '',
+        number: '',
+        district: '',
+        city: '',
+        state: '',
+        complement: ''
+      },
       shift: '',
       date: new Date()
     }
@@ -69,29 +74,22 @@ export default function useNewOrder() {
 
   const offers = watch('offers')
 
-  const handleNewOffer = (
-    offer: Omit<OfferDetails, 'id' | 'orderId'>,
-    offerName: string,
-    variantsNames: string[]
-  ) => {
-    setValue('offers', [
-      ...offers,
-      {name: offerName, variantsNames, details: offer}
-    ])
+  const handleNewOffer = (data: OfferData) => {
+    setValue('offers', [...offers, data])
+    setNewOfferModalOpened(false)
   }
 
-  const handleRemoveOffer = (tag: string) => {
-    // setValue(
-    //   'offers',
-    //   offers.filter((offer) => {
-    //     return getVariantName(variant) !== tag
-    //   })
-    // )
+  const handleRemoveOffer = (offerIdx: number) => {
+    setValue(
+      'offers',
+      offers.filter((_, idx) => idx !== offerIdx)
+    )
   }
 
   const onSubmit = useCallback(
-    loader.action(async () => {
+    loader.action(async (data) => {
       try {
+        console.log(3, data)
         clearErrors()
       } catch (err) {
         console.error(err)
@@ -122,6 +120,8 @@ export default function useNewOrder() {
     offers,
     products,
     newOfferModalOpened,
+    editingOfferIdx,
+    onEditOffer,
     setNewOfferModalOpened,
     handleNewOffer,
     handleRemoveOffer,

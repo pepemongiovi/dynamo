@@ -1,18 +1,24 @@
 import Layout from '@/layouts/Layout'
-import Login from '@/pages/app/login'
 import {Stack} from '@mui/system'
 import {FC, useMemo, useState} from 'react'
 import FormInput from '@/components/common/FormInput'
 import useNewOrder from './useNewOrder'
-import {Box, Divider, Grid, Typography} from '@mui/material'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Divider,
+  Grid,
+  Typography
+} from '@mui/material'
 import SelectInput from '@/components/common/SelectInput'
-import TagSelector from '@/components/common/TagSelector'
-import Modal from '@/components/common/Modal'
-import Tile from '@/components/common/Tile'
 import SelectOfferModal from '@/components/offers/SelectOfferModal'
 import OrderSummary from '@/components/orders/order-summary/OrderSummary'
 import {getPlaceholder} from '@/utils/format'
 import DateFormInput from '@/components/common/DateFormInput'
+import Button from '@/components/common/Button'
+import {Add, Delete, Edit, ExpandMore} from '@mui/icons-material'
 
 const NewOrder: FC = () => {
   const {
@@ -22,26 +28,27 @@ const NewOrder: FC = () => {
     offers,
     products,
     newOfferModalOpened,
+    editingOfferIdx,
     setNewOfferModalOpened,
     handleNewOffer,
     handleRemoveOffer,
+    onEditOffer,
     onSubmit
   } = useNewOrder()
 
-  const offersTags = useMemo(() => offers.map((offer) => offer), [offers])
-  console.log(offers)
   return (
     <Layout gap={5} direction="row">
-      <OrderSummary />
+      <OrderSummary onSubmit={onSubmit} />
 
       {/* <Divider orientation="vertical" flexItem /> */}
 
-      <Stack spacing={2} width="100%" py={2}>
+      <Stack spacing={0.5} width="100%" py={2}>
         <FormInput
           name="name"
           control={control}
           label="Nome completo"
           placeholder={getPlaceholder('nome completo')}
+          rules={{required: 'Obrigatório'}}
         />
 
         <Grid container spacing={2} width="100%">
@@ -51,6 +58,7 @@ const NewOrder: FC = () => {
               control={control}
               label="Whatsapp"
               placeholder={getPlaceholder('número de telefone')}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
 
@@ -64,6 +72,7 @@ const NewOrder: FC = () => {
                 value: shift,
                 label: shift
               }))}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
           <Grid item xs={4}>
@@ -71,6 +80,7 @@ const NewOrder: FC = () => {
               name="date"
               control={control}
               label="Data de Entrega"
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
         </Grid>
@@ -84,6 +94,7 @@ const NewOrder: FC = () => {
               control={control}
               label="CEP"
               placeholder={getPlaceholder('CEP')}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
 
@@ -97,6 +108,7 @@ const NewOrder: FC = () => {
                 value: state.shortName,
                 label: state.name
               }))}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
           <Grid item xs={4}>
@@ -105,6 +117,7 @@ const NewOrder: FC = () => {
               control={control}
               label="Cidade"
               placeholder={getPlaceholder('cidade', true)}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
         </Grid>
@@ -116,6 +129,7 @@ const NewOrder: FC = () => {
               control={control}
               label="Endereço"
               placeholder={getPlaceholder('endereço')}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
           <Grid item xs={4}>
@@ -124,6 +138,7 @@ const NewOrder: FC = () => {
               control={control}
               label="Número"
               placeholder={getPlaceholder('número')}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
         </Grid>
@@ -135,6 +150,7 @@ const NewOrder: FC = () => {
               control={control}
               label="Bairro"
               placeholder={getPlaceholder('bairro')}
+              rules={{required: 'Obrigatório'}}
             />
           </Grid>
 
@@ -150,17 +166,81 @@ const NewOrder: FC = () => {
 
         <Divider flexItem sx={{pt: 2}} />
 
-        <Typography fontSize={20} pt={1}>
-          Variantes
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" pb={2}>
+          <Typography fontSize={20} pt={1}>
+            Ofertas escolhidas
+          </Typography>
 
-        <TagSelector
-          addBtnLabel="Nova Variante"
-          openModal={() => setNewOfferModalOpened(true)}
-          onRemove={handleRemoveOffer}
-          tags={offers.map((offer) => offer.name)}
-        />
+          <Button
+            startIcon={<Add />}
+            onClick={() => setNewOfferModalOpened(true)}
+          >
+            Adicionar Oferta
+          </Button>
+        </Stack>
+
+        {!offers.length ? (
+          <Typography color="placeholder">Nenhuma oferta escolhida</Typography>
+        ) : (
+          offers.map((offer, idx) => (
+            <Stack direction="row" spacing={1} alignItems="start">
+              <Accordion sx={{width: '100%', padding: 1}}>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  sx={{minHeight: '20px !important', height: '50px !important'}}
+                >
+                  <Typography>{offer.name}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="end"
+                  >
+                    <Stack spacing={0.5}>
+                      {offer.variantsInfo.map(({name, amount}) => (
+                        <Typography
+                          fontSize={15}
+                          color="placeholder"
+                          sx={{display: 'flex', alignItems: 'center', gap: 0.7}}
+                        >
+                          <Typography color="grey.main">
+                            ◦ ({amount})
+                          </Typography>{' '}
+                          {name}
+                        </Typography>
+                      ))}
+                    </Stack>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="end"
+                      spacing={1}
+                    >
+                      <Button
+                        size="sm"
+                        variant="outlined"
+                        onClick={() => onEditOffer(idx)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        size="sm"
+                        danger
+                        onClick={() => handleRemoveOffer(idx)}
+                      >
+                        Excluir
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </AccordionDetails>
+              </Accordion>
+            </Stack>
+          ))
+        )}
+
         <SelectOfferModal
+          offer={editingOfferIdx !== null ? offers[editingOfferIdx] : undefined}
           open={newOfferModalOpened}
           onClose={() => setNewOfferModalOpened(false)}
           onSubmit={handleNewOffer}

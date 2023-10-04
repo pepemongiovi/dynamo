@@ -11,18 +11,27 @@ import Button from '../common/Button'
 import {getVariantLabel} from '@/features/new-order/useNewOrder'
 import {Add, CheckCircleOutlineSharp, Remove} from '@mui/icons-material'
 
+export type OfferData = {
+  name: string
+  offerId: string
+  productId: string
+  variantsInfo: {
+    variantId: string
+    name: string
+    amount: number
+  }[]
+}
+
 type NewVariantModalProps = Omit<ModalProps, 'children' | 'onSubmit'> & {
+  offer?: OfferData
   products: Product[]
-  onSubmit: (
-    offer: Omit<OfferDetails, 'id' | 'orderId'>,
-    offerName: string,
-    offerVariantsNames: string[]
-  ) => void
+  onSubmit: (data: OfferData) => void
 }
 
 const SelectOfferModal: FC<NewVariantModalProps> = ({
   products,
   open,
+  offer,
   onClose,
   onSubmit
 }) => {
@@ -41,7 +50,8 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
     submit
   } = useSelectOfferModal({
     onSubmit,
-    products
+    products,
+    offer
   })
 
   return (
@@ -56,7 +66,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
       btnSx={{bgcolor: 'success.main', '&:hover': {bgcolor: 'success.hover'}}}
     >
       <form onSubmit={submit}>
-        <Stack spacing={5}>
+        <Stack spacing={2}>
           {!!products.length && (
             <SelectInput
               label="Produto"
@@ -136,7 +146,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
             ))}
           </Grid>
 
-          <Stack>
+          <Stack spacing={1}>
             {selectedVariants.map(({id, amount, label}) => {
               const incrementEnabled = variantIncrementEnabled(id, amount + 1)
               return (
