@@ -55,9 +55,10 @@ const NewOrder: FC = () => {
           <Grid item xs={4} sx={{pl: '0px !important'}}>
             <FormInput
               name="phone"
+              type="number"
               control={control}
               label="Whatsapp"
-              placeholder={getPlaceholder('número de telefone')}
+              placeholder={getPlaceholder('telefone')}
               rules={{required: 'Obrigatório'}}
             />
           </Grid>
@@ -135,6 +136,7 @@ const NewOrder: FC = () => {
           <Grid item xs={4}>
             <FormInput
               name="number"
+              type="number"
               control={control}
               label="Número"
               placeholder={getPlaceholder('número')}
@@ -166,7 +168,7 @@ const NewOrder: FC = () => {
 
         <Divider flexItem sx={{pt: 2}} />
 
-        <Stack direction="row" justifyContent="space-between" pb={2}>
+        <Stack direction="row" justifyContent="space-between" py={2}>
           <Typography fontSize={20} pt={1}>
             Ofertas escolhidas
           </Typography>

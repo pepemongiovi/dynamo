@@ -10,10 +10,12 @@ type UseSelectOfferModal = {
   onSubmit: (data: OfferData) => void
   products: Product[]
   offer?: OfferData
+  onClose: () => void
 }
 
 const useSelectOfferModal = ({
   onSubmit,
+  onClose,
   products,
   offer
 }: UseSelectOfferModal) => {
@@ -114,6 +116,7 @@ const useSelectOfferModal = ({
 
   const cleanForm = () => {
     reset()
+    setInitialEditLoaded(false)
     setVariants([])
     setOffers([])
   }
@@ -155,6 +158,11 @@ const useSelectOfferModal = ({
     }),
     [variantIds]
   )
+
+  const handleClose = () => {
+    cleanForm()
+    onClose()
+  }
 
   const fetchOffers = async (productId?: string) => {
     const res = await getOffersByProductId.mutateAsync({
@@ -298,6 +306,7 @@ const useSelectOfferModal = ({
     offerProductAmounts,
     selectedOfferId,
     isOfferValid,
+    handleClose,
     variantIncrementEnabled,
     onAddVariant,
     onRemoveVariant,

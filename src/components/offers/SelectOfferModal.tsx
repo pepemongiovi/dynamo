@@ -44,6 +44,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
     offerProductAmounts,
     selectedOfferId,
     isOfferValid,
+    handleClose,
     variantIncrementEnabled,
     onAddVariant,
     onRemoveVariant,
@@ -51,7 +52,8 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
   } = useSelectOfferModal({
     onSubmit,
     products,
-    offer
+    offer,
+    onClose
   })
 
   return (
@@ -59,7 +61,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
       title="Adicionar Nova Oferta"
       btnLabel="CONFIRMAR"
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       width={800}
       onSubmit={submit}
       disabled={!isOfferValid}
