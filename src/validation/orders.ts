@@ -22,46 +22,27 @@ export const orderSchema = z.object({
 })
 
 export const offerData = z.object({
-  name: z.string(),
-  variantsInfo: z.object({
-    variantId: z.string(),
-    name: z.string(),
-    amount: z.number()
-  }),
-  details: z.object({
-    offerId: z.string(),
-    productId: z.string(),
-    variantIds: z.array(
-      z.object({
-        variantId: z.string(),
-        amount: z.number()
-      })
-    )
-  })
+  name: z.string().optional(),
+  offerId: z.string(),
+  productId: z.string(),
+  variantsInfo: z.array(
+    z.object({
+      variantId: z.string(),
+      name: z.string().optional(),
+      amount: z.number()
+    })
+  )
 })
 
-export type OfferData = {
-  name: string
-  variantsInfo: {
-    variantId: string
-    name: string
-    amount: number
-  }[]
-  details: {
-    offerId: string
-    variantIds: {variantId: string; amount: number}[]
-    productId: string
-  }
-}
-
 export const createOrderSchema = z.object({
-  offers: z.array(offerData),
   name: z.string(),
+  offers: z.array(offerData),
   phone: z.string(),
-  addressInfo: offerData,
+  addressInfo: addressSchema,
   userId: z.string(),
   shift: z.string(),
   date: z.date()
 })
 
+export type OfferData = z.infer<typeof offerData>
 export type ICreateOrder = z.infer<typeof createOrderSchema>

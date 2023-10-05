@@ -4,7 +4,7 @@ import trpc from '@/utils/trpc'
 import {Offer, OfferDetails, Product, Variant} from '@prisma/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useForm} from 'react-hook-form'
-import {OfferData} from './SelectOfferModal'
+import {OfferData} from '@/validation'
 
 type UseSelectOfferModal = {
   onSubmit: (data: OfferData) => void
@@ -203,17 +203,12 @@ const useSelectOfferModal = ({
     [variants, showProductVariants]
   )
 
-  const variantIncrementEnabled = (variantId: string, newAmount: number) => {
-    if (!selectedOffer) return true
-    const maxAmount =
-      selectedOffer.products.find(
-        ({productId}) =>
-          productId ===
-          variants?.find((variant) => variant.id === variantId)?.productId
-      )?.amount || 1
-
-    return newAmount <= maxAmount
-  }
+  const variantIncrementEnabled = useCallback(
+    (variantId: string) => {
+      return variantsToShow.map((variant) => variant.id).includes(variantId)
+    },
+    [variantsToShow]
+  )
 
   const onAddVariant = (id?: string, amount?: number) => {
     const varId = typeof id === 'string' ? id : selectedVariantId

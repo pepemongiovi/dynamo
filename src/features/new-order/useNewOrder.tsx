@@ -11,7 +11,7 @@ import {
   Variant
 } from '@prisma/client'
 import trpc from '@/utils/trpc'
-import {OfferData} from '@/components/offers/SelectOfferModal'
+import {ICreateOrder, OfferData} from '@/validation'
 
 export const getVariantLabel = (variant: Variant, productName: string) => {
   const sizeLabel = `Tamanho ${variant.size}`
@@ -38,6 +38,7 @@ export default function useNewOrder() {
   const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
 
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
+  const createOrder = trpc.useMutation(['orders.create'])
 
   const onEditOffer = (offerIdx: number) => {
     setEditingOfferIdx(offerIdx)
@@ -53,15 +54,14 @@ export default function useNewOrder() {
     clearErrors,
     control,
     watch
-  } = useFormHook({
+  } = useFormHook<ICreateOrder>({
     defaultValues: {
       offers: [] as OfferData[],
-      name: '',
       phone: '',
       addressInfo: {
         zipcode: '',
         address: '',
-        number: '',
+        number: undefined as any,
         district: '',
         city: '',
         state: '',
@@ -87,9 +87,24 @@ export default function useNewOrder() {
   }
 
   const onSubmit = useCallback(
-    loader.action(async (data) => {
+    loader.action(async ({offers, ...newOrder}: ICreateOrder) => {
       try {
-        console.log(3, data)
+        const res = await createOrder.mutateAsync({
+          ...newOrder,
+          offers: offers.map((offer) => ({
+            ...offer,
+            variantsInfo: offer.variantsInfo.map(({variantId, amount}) => ({
+              variantId,
+              amount
+            }))
+          })),
+          userId: data?.user.id as string,
+          addressInfo: {
+            ...newOrder.addressInfo,
+            number: Number(newOrder.addressInfo.number)
+          }
+        })
+        console.log(3, res)
         clearErrors()
       } catch (err) {
         console.error(err)

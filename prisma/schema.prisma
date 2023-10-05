@@ -58,6 +58,7 @@ type ProductAmount {
 
 model Order {    
   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
   phone          String 
   offerIds       String[]                @db.ObjectId
   offers         OfferDetails[]            
@@ -65,6 +66,7 @@ model Order {
   user           User                    @relation(fields: [userId], references: [id])
   addressInfo    Address     
   date           DateTime      
+  shift          String
   createdAt      DateTime                @default(now())
 }
 
@@ -75,7 +77,6 @@ model OfferDetails {
   orderId        String                    @db.ObjectId
   order          Order                     @relation(fields: [orderId], references: [id])
 }
-
 
 model Offer {
   id            String                   @id @default(auto()) @map("_id") @db.ObjectId
@@ -88,7 +89,7 @@ model Variant {
   id                   String            @id @default(auto()) @map("_id") @db.ObjectId
   productId            String            @db.ObjectId
   product              Product           @relation(fields: [productId], references: [id]) 
-  amountAvailable      Int
+  amountAvailable      Int //transformar em um objeto com quantidade e regiao
   price                Float
   color                String?
   size                 String?

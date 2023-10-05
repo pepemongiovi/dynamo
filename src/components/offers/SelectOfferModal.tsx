@@ -10,17 +10,7 @@ import {Offer, OfferDetails, Product, Variant} from '@prisma/client'
 import Button from '../common/Button'
 import {getVariantLabel} from '@/features/new-order/useNewOrder'
 import {Add, CheckCircleOutlineSharp, Remove} from '@mui/icons-material'
-
-export type OfferData = {
-  name: string
-  offerId: string
-  productId: string
-  variantsInfo: {
-    variantId: string
-    name: string
-    amount: number
-  }[]
-}
+import {OfferData} from '@/validation'
 
 type NewVariantModalProps = Omit<ModalProps, 'children' | 'onSubmit'> & {
   offer?: OfferData
@@ -98,7 +88,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
           {!!offers.length && !!selectedOfferId && (
             <Stack direction="row" spacing={2} alignItems="end">
               <SelectInput
-                label="Variante"
+                label="Variantes disponíveis"
                 name="variantId"
                 control={control}
                 containerSx={{flex: 1}}

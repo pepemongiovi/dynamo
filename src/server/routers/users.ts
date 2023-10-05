@@ -141,7 +141,7 @@ export default createRouter().merge(
         const order = await db.order.create({
           data: {
             userId,
-            address: {
+            addressInfo: {
               address: 'Av. Oceano Pacífico',
               city: 'Campina Grande',
               district: 'Intermares',
