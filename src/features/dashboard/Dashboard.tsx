@@ -16,12 +16,19 @@ const Dashboard: FC = () => {
   const goToOrderRegisterForm = () => router.push('/app/new-order')
 
   return (
-    <Layout sx={{width: '100%'}} gap={4}>
+    <Layout
+      sx={{width: '100%', position: 'relative'}}
+      gap={4}
+      direction="row"
+      align="start"
+    >
+      <Table />
+
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{width: '100%'}}
+        sx={{width: 500 || '100%', position: 'sticky', top: 100}}
         spacing={2}
       >
         <FormInput
@@ -35,8 +42,6 @@ const Dashboard: FC = () => {
           Novo pedido
         </Button>
       </Stack>
-
-      <Table />
     </Layout>
   )
 }

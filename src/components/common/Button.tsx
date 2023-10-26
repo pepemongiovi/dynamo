@@ -9,7 +9,7 @@ import {FC} from 'react'
 type ButtonProps = Omit<BtnProps, 'size'> & {
   loading?: boolean
   danger?: boolean
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
 const Button: FC<ButtonProps> = ({
@@ -22,6 +22,8 @@ const Button: FC<ButtonProps> = ({
 }) => {
   const getHeight = () => {
     switch (size) {
+      case 'xs':
+        return 30
       case 'sm':
         return 35
       case 'md':

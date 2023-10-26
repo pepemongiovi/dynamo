@@ -8,8 +8,8 @@ const maxWidth = 1350
 
 const Layout: FC<{
   children?: ReactNode
-  align?: 'center' | 'space-between'
-  justify?: 'center' | 'space-between'
+  align?: 'center' | 'space-between' | 'start' | 'end'
+  justify?: 'center' | 'space-between' | 'start' | 'end'
   direction?: 'row' | 'column'
   gap?: number
   sx?: SxProps

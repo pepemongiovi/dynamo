@@ -18,6 +18,7 @@ export const orderSchema = z.object({
   addressInfo: addressSchema,
   userId: z.string(),
   offers: z.array(offerSchema),
+  observations: z.string().optional(),
   date: z.date()
 })
 
@@ -29,7 +30,8 @@ export const offerData = z.object({
     z.object({
       variantId: z.string(),
       name: z.string().optional(),
-      amount: z.number()
+      amount: z.number(),
+      price: z.number().optional()
     })
   )
 })
@@ -41,6 +43,7 @@ export const createOrderSchema = z.object({
   addressInfo: addressSchema,
   userId: z.string(),
   shift: z.string(),
+  observations: z.string().optional(),
   date: z.date()
 })
 

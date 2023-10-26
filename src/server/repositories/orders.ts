@@ -26,8 +26,6 @@ export const createNewOrder = async (input: ICreateOrder) => {
     }
   })
 
-  console.log('@@@@@@@@@@@@&&&$ˆ&#$%@#&ˆ$%&@#%$&@#%$ˆ@#', order)
-
   return {
     status: 201,
     order,

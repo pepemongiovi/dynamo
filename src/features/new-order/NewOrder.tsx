@@ -19,6 +19,7 @@ import {getPlaceholder} from '@/utils/format'
 import DateFormInput from '@/components/common/DateFormInput'
 import Button from '@/components/common/Button'
 import {Add, Delete, Edit, ExpandMore} from '@mui/icons-material'
+import OfferAccordion from '@/components/offers/OfferAccordion'
 
 const NewOrder: FC = () => {
   const {
@@ -29,6 +30,8 @@ const NewOrder: FC = () => {
     products,
     newOfferModalOpened,
     editingOfferIdx,
+    isLoading,
+    isValid,
     setNewOfferModalOpened,
     handleNewOffer,
     handleRemoveOffer,
@@ -38,8 +41,6 @@ const NewOrder: FC = () => {
 
   return (
     <Layout gap={5} direction="row">
-      <OrderSummary onSubmit={onSubmit} />
-
       {/* <Divider orientation="vertical" flexItem /> */}
 
       <Stack spacing={0.5} width="100%" py={2}>
@@ -166,6 +167,16 @@ const NewOrder: FC = () => {
           </Grid>
         </Grid>
 
+        <Divider flexItem sx={{pb: 2}} />
+
+        <FormInput
+          containerSx={{pt: 2}}
+          name="observations"
+          control={control}
+          label="Observações"
+          placeholder="Digite as observações"
+        />
+
         <Divider flexItem sx={{pt: 2}} />
 
         <Stack direction="row" justifyContent="space-between" py={2}>
@@ -174,6 +185,7 @@ const NewOrder: FC = () => {
           </Typography>
 
           <Button
+            size="sm"
             startIcon={<Add />}
             onClick={() => setNewOfferModalOpened(true)}
           >
@@ -188,66 +200,12 @@ const NewOrder: FC = () => {
             </Typography>
           ) : (
             offers.map((offer, idx) => (
-              <Stack direction="row" spacing={1} alignItems="start">
-                <Accordion sx={{width: '100%', padding: 1}}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    sx={{
-                      minHeight: '20px !important',
-                      height: '50px !important'
-                    }}
-                  >
-                    <Typography>{offer.name}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="end"
-                    >
-                      <Stack spacing={0.5}>
-                        {offer.variantsInfo.map(({name, amount}) => (
-                          <Typography
-                            fontSize={15}
-                            color="placeholder"
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.7
-                            }}
-                          >
-                            <Typography color="grey.main">
-                              ◦ ({amount})
-                            </Typography>{' '}
-                            {name}
-                          </Typography>
-                        ))}
-                      </Stack>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
-                        spacing={1}
-                      >
-                        <Button
-                          size="sm"
-                          variant="outlined"
-                          onClick={() => onEditOffer(idx)}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          size="sm"
-                          danger
-                          onClick={() => handleRemoveOffer(idx)}
-                        >
-                          Excluir
-                        </Button>
-                      </Stack>
-                    </Stack>
-                  </AccordionDetails>
-                </Accordion>
-              </Stack>
+              <OfferAccordion
+                offer={offer}
+                onEdit={onEditOffer}
+                onRemove={handleRemoveOffer}
+                idx={idx}
+              />
             ))
           )}
         </Stack>
@@ -260,6 +218,13 @@ const NewOrder: FC = () => {
           products={products}
         />
       </Stack>
+
+      <OrderSummary
+        onSubmit={onSubmit}
+        isLoading={isLoading}
+        offers={offers}
+        isValid={isValid}
+      />
     </Layout>
   )
 }

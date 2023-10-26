@@ -4,6 +4,11 @@ services:
       dockerfile: dev.Dockerfile
     environment:
       DATABASE_URL: mongodb+srv://pepemongiovi:130897@db.zpccdz9.mongodb.net/cluster0retryWrites=true&w=majority
+      VIACEP_API_URL: https://viacep.com.br
+      JWT_SECRET: 9maK5qAqHoX4i2Yv9B4vmTNm4hUlmz525YfMXzVhw2ae64iXgUqSV0cY16xa27CQIoAPHg39YxkQ96s37xXzy7xkX1
+      NEXT_PUBLIC_RECAPTCHA_SITE_KEY: 6Ld2WZYnAAAAAPXmJ6rdYRjXYuUo3boKXMgPpND0
+      RECAPTCHA_SECRET_KEY: AIzaSyCzEcTRMBvLjrTtnqlEg9VXzbeSgk_uWIo
+      RECAPTCHA_SCORE_THRESHOLD: 0.5
     ports:
       - '3000:3000'
     volumes:

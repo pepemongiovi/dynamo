@@ -145,6 +145,7 @@ const useSelectOfferModal = ({
                   variant,
                   products?.find(({id}) => id === variant.productId)?.name || ''
                 ),
+                price: variant.price,
                 amount:
                   variantIds?.find(({variantId}) => variantId === variant.id)
                     ?.amount || 0

@@ -65,6 +65,7 @@ model Order {
   userId         String                  @db.ObjectId
   user           User                    @relation(fields: [userId], references: [id])
   addressInfo    Address     
+  observations   String?
   date           DateTime      
   shift          String
   createdAt      DateTime                @default(now())
@@ -82,8 +83,13 @@ model Offer {
   id            String                   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   products      ProductAmount[]  
+  discount      Discount?
 }
 
+type Discount {
+  type          String
+  value         Float
+}
 
 model Variant {
   id                   String            @id @default(auto()) @map("_id") @db.ObjectId

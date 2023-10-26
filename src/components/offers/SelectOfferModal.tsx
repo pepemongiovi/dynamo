@@ -140,7 +140,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
 
           <Stack spacing={1}>
             {selectedVariants.map(({id, amount, label}) => {
-              const incrementEnabled = variantIncrementEnabled(id, amount + 1)
+              const incrementEnabled = variantIncrementEnabled(id)
               return (
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Stack

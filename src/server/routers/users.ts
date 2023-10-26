@@ -140,6 +140,8 @@ export default createRouter().merge(
 
         const order = await db.order.create({
           data: {
+            name: '',
+            shift: 'Manhã',
             userId,
             addressInfo: {
               address: 'Av. Oceano Pacífico',

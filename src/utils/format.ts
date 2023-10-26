@@ -7,7 +7,7 @@ export const getPlaceholder = (
   return `${actionLabel} ${femalePrefix ? 'a' : 'o'} ${value}...`
 }
 
-export function formatMoney(value: number, fractionDigits = 0): string {
+export function formatMoney(value: number, fractionDigits = 2): string {
   const num = new Intl.NumberFormat(undefined, {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits

@@ -12,6 +12,9 @@ import {
 } from '@prisma/client'
 import trpc from '@/utils/trpc'
 import {ICreateOrder, OfferData} from '@/validation'
+import {findAddress} from '@/services/viacep-api'
+import {useDebounce} from '@/hooks/useDebounce'
+import {toast} from 'react-toastify'
 
 export const getVariantLabel = (variant: Variant, productName: string) => {
   const sizeLabel = `Tamanho ${variant.size}`
@@ -40,6 +43,8 @@ export default function useNewOrder() {
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
   const createOrder = trpc.useMutation(['orders.create'])
 
+  console.log(products)
+
   const onEditOffer = (offerIdx: number) => {
     setEditingOfferIdx(offerIdx)
     setNewOfferModalOpened(true)
@@ -53,11 +58,14 @@ export default function useNewOrder() {
     setError,
     clearErrors,
     control,
+    reset,
     watch
   } = useFormHook<ICreateOrder>({
     defaultValues: {
+      name: '',
       offers: [] as OfferData[],
       phone: '',
+      observations: '',
       addressInfo: {
         zipcode: '',
         address: '',
@@ -73,6 +81,11 @@ export default function useNewOrder() {
   })
 
   const offers = watch('offers')
+  const zipcode = watch('addressInfo.zipcode')
+
+  console.log('offers', offers)
+
+  const debouncedSearchTerm = useDebounce(zipcode, 500)
 
   const handleNewOffer = (data: OfferData) => {
     setValue('offers', [...offers, data])
@@ -85,6 +98,42 @@ export default function useNewOrder() {
       offers.filter((_, idx) => idx !== offerIdx)
     )
   }
+
+  const autofillAddress = async () => {
+    try {
+      const address = await findAddress(zipcode)
+      if (address.logradouro) {
+        setValue('addressInfo', {
+          zipcode,
+          address: address.logradouro,
+          number: getValues('addressInfo.number')
+            ? Number(getValues('addressInfo.number'))
+            : (undefined as any),
+          district: address.bairro,
+          city: address.localidade,
+          state: address.uf,
+          complement: address.complemento || getValues('addressInfo.complement')
+        })
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  // cep: '58400-137',
+  // logradouro: 'Rua Governador Agamenon Magalhães',
+  // complemento: '',
+  // bairro: 'Centro',
+  // localidade: 'Campina Grande',
+  // uf: 'PB',
+  // ibge: '2504009',
+  // gia: '',
+  // ddd: '83',
+  // siafi: '1981'
+
+  useEffect(() => {
+    autofillAddress()
+  }, [debouncedSearchTerm])
 
   const onSubmit = useCallback(
     loader.action(async ({offers, ...newOrder}: ICreateOrder) => {
@@ -104,9 +153,16 @@ export default function useNewOrder() {
             number: Number(newOrder.addressInfo.number)
           }
         })
+        if (res.order?.id) {
+          toast.success('Seu pedido foi agendado!')
+          reset()
+        } else {
+          throw new Error()
+        }
         console.log(3, res)
         clearErrors()
       } catch (err) {
+        toast.error('Ocorreu um erro ao agendar seu pedido. Tente mais tarde')
         console.error(err)
       }
     }),
@@ -136,6 +192,9 @@ export default function useNewOrder() {
     products,
     newOfferModalOpened,
     editingOfferIdx,
+    isLoading,
+    isValid,
+    getValues,
     onEditOffer,
     setNewOfferModalOpened,
     handleNewOffer,
