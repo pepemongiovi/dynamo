@@ -1,6 +1,6 @@
 import db from '../db'
 import {Prisma} from '@prisma/client'
-import {ICreateOrder} from '@/validation'
+import {ICreateOrder, IGetOrdersByUserId} from '@/validation'
 
 export const createNewOrder = async (input: ICreateOrder) => {
   const {offers, ...body} = input
@@ -30,5 +30,24 @@ export const createNewOrder = async (input: ICreateOrder) => {
     status: 201,
     order,
     message: 'Account created successfully'
+  }
+}
+
+export const fetchOrdersByUserId = async ({userId}: IGetOrdersByUserId) => {
+  const userExists = await db.user.findFirst({
+    where: {id: userId}
+  })
+  if (!userExists) {
+    throw new Error(`Usuário de id "${userId}" não encontrado.`)
+  }
+  const orders = await db.order.findMany({
+    where: {userId},
+    include: {offers: true}
+  })
+
+  return {
+    status: 200,
+    orders,
+    message: 'Orders fetched successfully'
   }
 }

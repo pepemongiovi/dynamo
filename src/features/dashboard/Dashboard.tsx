@@ -8,27 +8,21 @@ import FormInput from '@/components/common/FormInput'
 import useDashboard from './useDashboard'
 import Table from '@/components/common/Table'
 import {useRouter} from 'next/router'
+import {CircularProgress, Typography} from '@mui/material'
 
 const Dashboard: FC = () => {
   const router = useRouter()
-  const {control} = useDashboard()
+  const {control, orders, isLoading} = useDashboard()
 
   const goToOrderRegisterForm = () => router.push('/app/new-order')
 
   return (
-    <Layout
-      sx={{width: '100%', position: 'relative'}}
-      gap={4}
-      direction="row"
-      align="start"
-    >
-      <Table />
-
+    <Layout sx={{width: '100%'}} gap={4} align="start">
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{width: 500 || '100%', position: 'sticky', top: 100}}
+        sx={{width: '100%'}}
         spacing={2}
       >
         <FormInput
@@ -42,6 +36,14 @@ const Dashboard: FC = () => {
           Novo pedido
         </Button>
       </Stack>
+
+      {isLoading ? (
+        <CircularProgress sx={{alignSelf: 'center', justifySelf: 'center'}} />
+      ) : orders.length ? (
+        <Table rows={orders} />
+      ) : (
+        <Typography color="placeholder">Nenhum pedido realizado</Typography>
+      )}
     </Layout>
   )
 }

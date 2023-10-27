@@ -136,7 +136,7 @@ const OrderSummary = ({
         pb: 3,
         pt: 1.5,
         bgcolor: 'white',
-        boxShadow: '8px 8px 12px 5px #474787'
+        boxShadow: '5px 5px 8px 3px #474787'
       }}
     >
       <Stack sx={{flex: 1}} spacing={2} mb={2}>

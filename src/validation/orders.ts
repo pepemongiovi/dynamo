@@ -18,6 +18,7 @@ export const orderSchema = z.object({
   addressInfo: addressSchema,
   userId: z.string(),
   offers: z.array(offerSchema),
+  shift: z.string(),
   observations: z.string().optional(),
   date: z.date()
 })
@@ -47,5 +48,11 @@ export const createOrderSchema = z.object({
   date: z.date()
 })
 
+export const getOrdersByUserId = z.object({
+  userId: z.string()
+})
+
+export type OrderData = z.infer<typeof orderSchema>
 export type OfferData = z.infer<typeof offerData>
 export type ICreateOrder = z.infer<typeof createOrderSchema>
+export type IGetOrdersByUserId = z.infer<typeof getOrdersByUserId>
