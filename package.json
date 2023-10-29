@@ -29,6 +29,7 @@
     "@trpc/next": "^9.27.0",
     "@trpc/react": "^9.27.0",
     "@trpc/server": "^9.27.0",
+    "@types/react-input-mask": "^3.0.4",
     "argon2": "^0.30.3",
     "clsx": "^1.2.1",
     "date-fns": "^2.30.0",

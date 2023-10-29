@@ -76,7 +76,6 @@ const OrderSummary = ({
   isValid: boolean
   onSubmit: () => void
 }) => {
-  console.log(999, offers)
   const {handleSubmit} = useOrderSummary()
 
   const getOffersTotalPrice = (offers: OfferData[]) =>

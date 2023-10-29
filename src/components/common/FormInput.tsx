@@ -10,6 +10,7 @@ import {
   SxProps
 } from '@mui/material'
 import {getPlaceholder} from '@/utils/format'
+import InputMask from 'react-input-mask'
 
 type FormInputProps = InputProps & {
   control: Control<any>
@@ -23,6 +24,7 @@ type FormInputProps = InputProps & {
   inputSx?: SxProps
   error?: string
   endAdornment?: any
+  inputMask?: string
 }
 
 const FormInput: FC<FormInputProps> = ({
@@ -36,7 +38,8 @@ const FormInput: FC<FormInputProps> = ({
   label,
   containerSx,
   inputSx,
-  error,
+  error: customError,
+  inputMask,
   ...props
 }) => {
   return (
@@ -45,66 +48,87 @@ const FormInput: FC<FormInputProps> = ({
       name={name}
       defaultValue={defaultValue}
       rules={rules}
-      render={({field: {onChange, value, ref}, fieldState: {error}}) => (
-        <Box sx={{flex: 1, ...containerSx}}>
-          <FormControl
-            sx={{
-              width: 1,
-              my: 1,
-              '& .MuiFormHelperText-root': {ml: '1px'}
+      render={({
+        field: {onChange, value, ref},
+        fieldState: {error: formError}
+      }) => {
+        const error = customError || formError?.message?.toString()
+
+        const renderInput = () => (
+          <Input
+            ref={ref}
+            inputProps={{
+              style: {
+                padding: '10px 20px',
+                WebkitBoxShadow: '0 0 0 1000px white inset',
+                borderRadius: 15,
+                ...(inputSx as CSSProperties)
+              }
             }}
-          >
-            {label && (
-              <InputLabel
-                shrink
-                sx={{
-                  color: disabled ? 'disabled.main' : 'black',
-                  fontSize: 23,
-                  ml: -2,
-                  mt: -1
-                }}
-              >
-                {label}
-              </InputLabel>
-            )}
+            onChange={onChange}
+            value={value}
+            error={!!error}
+            disableUnderline={true}
+            disabled={disabled}
+            endAdornment={endAdornment}
+            sx={{
+              border: `1px solid ${disabled ? 'rgba(0,0,0,0.35)' : 'black'}`,
+              boxShadow: '0px 4px 4px rgb(0 0 0 / 25%)',
+              borderRadius: 2.5,
+              pr: 1.5,
+              width: 1,
+              bgcolor: 'white',
+              ...sx
+            }}
+            {...props}
+          />
+        )
 
-            <Input
-              ref={ref}
-              inputProps={{
-                style: {
-                  padding: '10px 20px',
-                  WebkitBoxShadow: '0 0 0 1000px white inset',
-                  borderRadius: 15,
-                  ...(inputSx as CSSProperties)
-                }
-              }}
-              onChange={onChange}
-              value={value}
-              error={!!error}
-              disableUnderline={true}
-              disabled={disabled}
-              endAdornment={endAdornment}
-              max
+        return (
+          <Box sx={{flex: 1, ...containerSx}}>
+            <FormControl
               sx={{
-                border: '1px solid #62646e',
-                boxShadow: '0px 4px 4px rgb(0 0 0 / 25%)',
-                borderRadius: 2.5,
-                pr: 1.5,
                 width: 1,
-                bgcolor: 'white',
-                ...sx
+                my: 1,
+                '& .MuiFormHelperText-root': {ml: '1px'}
               }}
-              {...props}
-            />
+            >
+              {label && (
+                <InputLabel
+                  shrink
+                  sx={{
+                    color: disabled ? 'disabled.main' : 'black',
+                    fontSize: 23,
+                    ml: -2,
+                    mt: -1
+                  }}
+                >
+                  {label}
+                </InputLabel>
+              )}
 
-            {error && (
-              <FormHelperText sx={{color: 'error.main', height: 15}}>
-                {error.message?.toString()}
-              </FormHelperText>
-            )}
-          </FormControl>
-        </Box>
-      )}
+              {inputMask ? (
+                <InputMask
+                  mask={inputMask}
+                  value={value}
+                  onChange={onChange}
+                  disabled={disabled}
+                >
+                  {() => renderInput()}
+                </InputMask>
+              ) : (
+                renderInput()
+              )}
+
+              {error && (
+                <FormHelperText sx={{color: 'error.main', height: 15}}>
+                  {error}
+                </FormHelperText>
+              )}
+            </FormControl>
+          </Box>
+        )
+      }}
     />
   )
 }

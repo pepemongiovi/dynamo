@@ -35,6 +35,7 @@ export default function useNewOrder() {
 
   const {isLoading, ...loader} = useLoader()
 
+  const [isZipcodeInvalid, setIsZipcodeInvalid] = useState(false)
   const [newOfferModalOpened, setNewOfferModalOpened] = useState(false)
   const [editingOfferIdx, setEditingOfferIdx] = useState<number | null>(null)
 
@@ -43,11 +44,19 @@ export default function useNewOrder() {
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
   const createOrder = trpc.useMutation(['orders.create'])
 
-  console.log(products)
-
   const onEditOffer = (offerIdx: number) => {
     setEditingOfferIdx(offerIdx)
     setNewOfferModalOpened(true)
+  }
+
+  const emptyAddress = {
+    zipcode: '',
+    address: '',
+    number: undefined as any,
+    district: '',
+    city: '',
+    state: '',
+    complement: ''
   }
 
   const {
@@ -66,15 +75,7 @@ export default function useNewOrder() {
       offers: [] as OfferData[],
       phone: '',
       observations: '',
-      addressInfo: {
-        zipcode: '',
-        address: '',
-        number: undefined as any,
-        district: '',
-        city: '',
-        state: '',
-        complement: ''
-      },
+      addressInfo: emptyAddress,
       shift: '',
       date: new Date()
     }
@@ -85,7 +86,7 @@ export default function useNewOrder() {
 
   console.log('offers', offers)
 
-  const debouncedSearchTerm = useDebounce(zipcode, 500)
+  const debouncedSearchTerm = useDebounce(zipcode, 800)
 
   const handleNewOffer = (data: OfferData) => {
     setValue('offers', [...offers, data])
@@ -101,22 +102,32 @@ export default function useNewOrder() {
 
   const autofillAddress = async () => {
     try {
+      if (!zipcode) return
+      if (zipcode.length !== 9) throw new Error()
+
       const address = await findAddress(zipcode)
       if (address.logradouro) {
         setValue('addressInfo', {
           zipcode,
           address: address.logradouro,
-          number: getValues('addressInfo.number')
-            ? Number(getValues('addressInfo.number'))
-            : (undefined as any),
+          number: undefined as any,
           district: address.bairro,
           city: address.localidade,
           state: address.uf,
           complement: address.complemento || getValues('addressInfo.complement')
         })
+        setIsZipcodeInvalid(false)
+      } else {
+        throw new Error()
       }
     } catch (err) {
-      console.error(err)
+      setIsZipcodeInvalid(true)
+      setValue('addressInfo.address', emptyAddress.address)
+      setValue('addressInfo.number', emptyAddress.number)
+      setValue('addressInfo.district', emptyAddress.district)
+      setValue('addressInfo.city', emptyAddress.city)
+      setValue('addressInfo.state', emptyAddress.state)
+      setValue('addressInfo.complement', emptyAddress.complement)
     }
   }
 
@@ -185,6 +196,7 @@ export default function useNewOrder() {
   }, [data])
 
   return {
+    isZipcodeInvalid,
     control,
     shiftOpts,
     statesOpts,

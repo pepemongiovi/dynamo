@@ -32,6 +32,8 @@ const NewOrder: FC = () => {
     editingOfferIdx,
     isLoading,
     isValid,
+    isZipcodeInvalid,
+    getValues,
     setNewOfferModalOpened,
     handleNewOffer,
     handleRemoveOffer,
@@ -56,8 +58,8 @@ const NewOrder: FC = () => {
           <Grid item xs={4} sx={{pl: '0px !important'}}>
             <FormInput
               name="phone"
-              type="number"
               control={control}
+              inputMask="(99) 99999-9999"
               label="Whatsapp"
               placeholder={getPlaceholder('telefone')}
               rules={{required: 'Obrigatório'}}
@@ -79,8 +81,8 @@ const NewOrder: FC = () => {
               placeholder={getPlaceholder('turno', false, 'Selecione')}
               control={control}
               options={shiftOpts.map((shift) => ({
-                value: shift,
-                label: shift
+                value: shift.value,
+                label: shift.label
               }))}
               rules={{required: 'Obrigatório'}}
             />
@@ -93,7 +95,9 @@ const NewOrder: FC = () => {
           <Grid item xs={4} sx={{pl: '0px !important'}}>
             <FormInput
               name="addressInfo.zipcode"
+              error={(isZipcodeInvalid ? 'CEP inválido' : '') as any}
               control={control}
+              inputMask="99999-999"
               label="CEP"
               placeholder={getPlaceholder('CEP')}
               rules={{required: 'Obrigatório'}}
@@ -104,6 +108,7 @@ const NewOrder: FC = () => {
             <SelectInput
               label="Estado"
               name="addressInfo.state"
+              disabled={true}
               placeholder={getPlaceholder('estado', false, 'Selecione')}
               control={control}
               options={statesOpts.map((state) => ({
@@ -116,6 +121,7 @@ const NewOrder: FC = () => {
           <Grid item xs={4}>
             <FormInput
               name="addressInfo.city"
+              disabled={true}
               control={control}
               label="Cidade"
               placeholder={getPlaceholder('cidade', true)}
@@ -128,6 +134,7 @@ const NewOrder: FC = () => {
           <Grid item xs={8} sx={{pl: '0px !important'}}>
             <FormInput
               name="addressInfo.address"
+              disabled={true}
               control={control}
               label="Endereço"
               placeholder={getPlaceholder('endereço')}

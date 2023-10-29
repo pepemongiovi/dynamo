@@ -7,7 +7,11 @@ export type PartiallyRequired<T, P extends keyof T> = {
 export type Nullable<T> = T | null
 export type Nullish<T> = Nullable<T> | undefined
 
-export const shiftOpts = ['Diurno', 'Manhã', 'Tarde']
+export const shiftOpts = [
+  {value: 'Diurno', label: 'Qualquer horário'},
+  {value: 'Manhã', label: 'Manhã'},
+  {value: 'Tarde', label: 'Tarde'}
+]
 export const statesOpts = [
   {name: 'Acre', shortName: 'AC'},
   {name: 'Alagoas', shortName: 'AL'},

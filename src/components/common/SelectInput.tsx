@@ -105,8 +105,11 @@ const SelectInput: FC<SelectInputProps> = ({
               sx={{
                 mt: showLabel ? 2 : 0,
                 borderRadius: '10px',
-                border: '0.5px solid black',
-                '& .Mui-disabled': {WebkitTextFillColor: '#71797E !important'},
+                border: `1px solid black`,
+                '&.Mui-disabled': {
+                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.25) !important',
+                  border: 'none'
+                },
                 '& legend': {display: 'none'},
                 '& fieldset': {top: 0},
                 ...sx

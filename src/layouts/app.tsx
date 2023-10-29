@@ -24,7 +24,7 @@ const theme = createTheme({
       hover: '#ffdddd'
     },
     warn: {
-      main: '#ffeb3b',
+      main: '#ffcc00',
       hover: '#ffffcc'
     },
     success: {
