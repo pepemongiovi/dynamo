@@ -39,7 +39,7 @@ const Dashboard: FC = () => {
 
       {isLoading ? (
         <CircularProgress sx={{alignSelf: 'center', justifySelf: 'center'}} />
-      ) : orders.length ? (
+      ) : orders?.length ? (
         <Table rows={orders} />
       ) : (
         <Typography color="placeholder">Nenhum pedido realizado</Typography>

@@ -25,31 +25,10 @@ export default function useDashboard() {
     }
   })
 
-  const getOrders = async (userId: string) => {
+  const getOrders = loader.action(async (userId: string) => {
     const response = await fetchOrders.mutateAsync({userId})
     setOrders(response.orders as any)
-  }
-
-  console.log(orders)
-
-  const onSubmit = useCallback(
-    loader.action(async () => {
-      try {
-        clearErrors()
-        const {email, password} = getValues()
-        await signIn('credentials', {
-          email: email.toLowerCase(),
-          password: password,
-          callbackUrl: '/app/sign-up'
-        }).catch((error) => {
-          console.info('Error: ', error)
-        })
-      } catch (err) {
-        console.error(err)
-      }
-    }),
-    []
-  )
+  })
 
   useEffect(() => {
     const authUserId = authData?.user.id
@@ -60,7 +39,6 @@ export default function useDashboard() {
 
   return {
     control,
-    onSubmit: handleSubmit(onSubmit),
     getValues,
     setValue,
     setError,

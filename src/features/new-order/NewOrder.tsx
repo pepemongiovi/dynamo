@@ -1,24 +1,16 @@
 import Layout from '@/layouts/Layout'
 import {Stack} from '@mui/system'
-import {FC, useMemo, useState} from 'react'
+import {FC} from 'react'
 import FormInput from '@/components/common/FormInput'
 import useNewOrder from './useNewOrder'
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Divider,
-  Grid,
-  Typography
-} from '@mui/material'
+import {Divider, Grid, Typography} from '@mui/material'
 import SelectInput from '@/components/common/SelectInput'
 import SelectOfferModal from '@/components/offers/SelectOfferModal'
 import OrderSummary from '@/components/orders/order-summary/OrderSummary'
 import {getPlaceholder} from '@/utils/format'
 import DateFormInput from '@/components/common/DateFormInput'
 import Button from '@/components/common/Button'
-import {Add, Delete, Edit, ExpandMore} from '@mui/icons-material'
+import {Add} from '@mui/icons-material'
 import OfferAccordion from '@/components/offers/OfferAccordion'
 
 const NewOrder: FC = () => {
@@ -33,7 +25,7 @@ const NewOrder: FC = () => {
     isLoading,
     isValid,
     isZipcodeInvalid,
-    getValues,
+    handleOfferUpdate,
     setNewOfferModalOpened,
     handleNewOffer,
     handleRemoveOffer,
@@ -221,7 +213,9 @@ const NewOrder: FC = () => {
           offer={editingOfferIdx !== null ? offers[editingOfferIdx] : undefined}
           open={newOfferModalOpened}
           onClose={() => setNewOfferModalOpened(false)}
-          onSubmit={handleNewOffer}
+          onSubmit={
+            editingOfferIdx !== null ? handleOfferUpdate : handleNewOffer
+          }
           products={products}
         />
       </Stack>

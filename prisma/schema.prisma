@@ -56,10 +56,21 @@ type ProductAmount {
   amount        Int
 }
 
+enum OrderStatus {
+  scheduled
+  confirmed
+  inRoute
+  delivered
+  complete
+  canceled
+  rejected
+}
+
 model Order {    
   id             String                  @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   phone          String 
+  status         OrderStatus
   offerIds       String[]                @db.ObjectId
   offers         OfferDetails[]            
   userId         String                  @db.ObjectId

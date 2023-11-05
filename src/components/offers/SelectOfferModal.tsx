@@ -49,7 +49,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
   return (
     <Modal
       title="Adicionar Nova Oferta"
-      btnLabel="CONFIRMAR"
+      btnLabel={offer ? 'Atualizar' : 'Adicionar'}
       open={open}
       onClose={handleClose}
       width={800}

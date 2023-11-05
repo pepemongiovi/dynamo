@@ -93,6 +93,16 @@ export default function useNewOrder() {
     setNewOfferModalOpened(false)
   }
 
+  const handleOfferUpdate = (updatedOffer: OfferData) => {
+    setValue(
+      'offers',
+      offers.map((offer, idx) =>
+        idx === editingOfferIdx ? updatedOffer : offer
+      )
+    )
+    setNewOfferModalOpened(false)
+  }
+
   const handleRemoveOffer = (offerIdx: number) => {
     setValue(
       'offers',
@@ -206,7 +216,7 @@ export default function useNewOrder() {
     editingOfferIdx,
     isLoading,
     isValid,
-    getValues,
+    handleOfferUpdate,
     onEditOffer,
     setNewOfferModalOpened,
     handleNewOffer,
