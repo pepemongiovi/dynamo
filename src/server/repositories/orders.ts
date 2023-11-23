@@ -68,20 +68,29 @@ export const fetchOrdersByUserId = async ({userId}: IGetOrdersByUserId) => {
   orders.forEach((order) => {
     order.offers.forEach((offer) => {
       if (!offerIds.includes(offer.id)) {
-        offerIds.push(offer.id)
+        offerIds.push(offer.offerId)
       }
     })
   })
 
-  const offers = await db.order.findMany({
+  const offers = await db.offer.findMany({
     where: {id: {in: offerIds}},
-    include: {offers: true}
+    select: {id: true, name: true}
+  })
+
+  const result = orders.map((order) => {
+    return {
+      ...order,
+      offers: order.offers.map((offer) => {
+        const offerName = offers.find(({id}) => offer.offerId === id)?.name
+        return {...offer, name: offerName}
+      })
+    }
   })
 
   return {
     status: 200,
-    orders,
-    offers,
+    orders: result,
     message: 'Orders fetched successfully'
   }
 }

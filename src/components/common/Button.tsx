@@ -50,9 +50,9 @@ const Button: FC<ButtonProps> = ({
         '&:hover': {
           borderColor: danger ? 'danger.main' : 'black',
           bgcolor: danger
-            ? 'danger.hover'
+            ? 'danger.light'
             : props.variant === 'outlined'
-            ? 'primary.hover'
+            ? 'primary.light'
             : undefined
         },
         ...sx

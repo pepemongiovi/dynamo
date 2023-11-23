@@ -24,9 +24,15 @@ import {visuallyHidden} from '@mui/utils'
 import {OrderData} from '@/validation'
 import {format} from 'date-fns'
 import Button from './Button'
-import {EditSharp, WhatsApp} from '@mui/icons-material'
+import {
+  BlockOutlined,
+  Cancel,
+  CancelOutlined,
+  EditSharp,
+  WhatsApp
+} from '@mui/icons-material'
 import {OrderStatus, OrderStatus as OrderStatusType} from '@prisma/client'
-import {OrderStatusEnum} from '@/types/utils'
+import {OrderStatusColor, OrderStatusEnum} from '@/types/utils'
 
 type Data = OrderData
 
@@ -153,7 +159,7 @@ function TableHead(props: TableProps) {
         {headCells.map((headCell, idx) => (
           <TableCell
             key={headCell.id}
-            align={idx <= 1 ? 'left' : 'right'}
+            align="left"
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -171,6 +177,7 @@ function TableHead(props: TableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell></TableCell>
       </TableRow>
     </MuiTableHead>
   )
@@ -213,7 +220,7 @@ function TableToolbar(props: TableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Pedidos realizados
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -315,7 +322,13 @@ export default function OrdersTable({rows}: {rows: OrderData[]}) {
         {visibleRows.map((row, index) => {
           const isItemSelected = isSelected(row.name as string)
           const labelId = `table-checkbox-${index}`
-          console.log(45555, row)
+
+          const status = OrderStatusEnum[row.status as OrderStatus]
+          const statusColor = OrderStatusColor[row.status as OrderStatus]
+          const cancelOrderEnabled =
+            row.status === OrderStatus.scheduled ||
+            row.status === OrderStatus.confirmed
+
           return (
             <TableRow
               hover
@@ -337,31 +350,62 @@ export default function OrdersTable({rows}: {rows: OrderData[]}) {
                 />
               </TableCell>
               <TableCell component="th" scope="row" padding="none">
-                <Typography fontSize={14}>
+                <Typography fontSize={15}>
                   {format(new Date(row.date), 'dd/LL/yyyy')}
                 </Typography>
-                <Typography color="placeholder">
+                <Typography color="placeholder" fontSize={14}>
                   {format(new Date(row.date), 'hh:mm')}
                 </Typography>
               </TableCell>
               <TableCell align="left">
-                <Stack>
+                <Stack justifyContent="center">
                   <Typography>{row.name}</Typography>
                   <Typography
                     fontSize={13}
                     color="placeholder"
                     sx={{display: 'flex', alignItems: 'center', gap: 0.3}}
                   >
-                    <WhatsApp sx={{width: 12, height: 12}} /> {row.phone}
+                    <WhatsApp
+                      sx={{width: 12, height: 12, mb: -0.15}}
+                      color="success"
+                    />
+                    {row.phone}
                   </Typography>
                 </Stack>
               </TableCell>
-              <TableCell align="right">Duas calcinhas + shorte</TableCell>
-              <TableCell align="right">
+              <TableCell align="left">
+                {(row.offers as any).reduce(
+                  (result: string, offer: OrderData) =>
+                    `${result}${offer.name} `,
+                  ''
+                )}
+              </TableCell>
+              <TableCell align="left">
                 R$ {Number(row.commission).toFixed(2)}
               </TableCell>
+              <TableCell align="left" sx={{width: 100}}>
+                <Stack
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{
+                    bgcolor: statusColor.light,
+                    width: 100,
+                    borderRadius: 5,
+                    border: '1.5px solid',
+                    borderColor: statusColor.main,
+
+                    py: 0.3
+                  }}
+                >
+                  <Typography color="white" fontSize={15}>
+                    {status}
+                  </Typography>
+                </Stack>
+              </TableCell>
               <TableCell align="right">
-                {OrderStatusEnum[row.status as OrderStatus]}
+                <BlockOutlined
+                  color={cancelOrderEnabled ? 'error' : 'disabled'}
+                />
               </TableCell>
             </TableRow>
           )

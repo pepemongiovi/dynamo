@@ -55,7 +55,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
       width={800}
       onSubmit={submit}
       disabled={!isOfferValid}
-      btnSx={{bgcolor: 'success.main', '&:hover': {bgcolor: 'success.hover'}}}
+      btnSx={{bgcolor: 'success.main', '&:hover': {bgcolor: 'success.light'}}}
     >
       <form onSubmit={submit}>
         <Stack spacing={2}>

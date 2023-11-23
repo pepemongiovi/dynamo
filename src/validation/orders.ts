@@ -25,7 +25,6 @@ export const orderSchema = z.object({
   commission: z.number(),
   status: z.enum([
     OrderStatusEnum.canceled,
-    OrderStatusEnum.complete,
     OrderStatusEnum.confirmed,
     OrderStatusEnum.delivered,
     OrderStatusEnum.inRoute,
@@ -70,7 +69,6 @@ export const updateOrderSchema = z.object({
   commission: z.number(),
   status: z.enum([
     OrderStatusEnum.canceled,
-    OrderStatusEnum.complete,
     OrderStatusEnum.confirmed,
     OrderStatusEnum.delivered,
     OrderStatusEnum.inRoute,

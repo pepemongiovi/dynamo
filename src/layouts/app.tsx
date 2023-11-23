@@ -20,20 +20,23 @@ const theme = createTheme({
     placeholder: 'rgba(0, 0, 0, 0.38)',
     grey: {main: '#595959'},
     danger: {
+      dark: '#d32f2f',
       main: '#f44336',
-      hover: '#ffdddd'
+      light: '#e57373'
     },
     warn: {
-      main: '#ffcc00',
-      hover: '#ffffcc'
+      dark: '#f57c00',
+      main: '#ff9800',
+      light: '#ffb74d'
     },
     success: {
-      main: '#28a745',
-      hover: '#4CAF50'
+      dark: '#388e3c',
+      main: '#4caf50',
+      light: '#81c784'
     },
     info: {
       main: '#ddffff',
-      hover: '#2196F3'
+      light: '#2196F3'
     }
   } as any
 })

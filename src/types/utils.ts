@@ -47,7 +47,15 @@ export enum OrderStatusEnum {
   confirmed = 'Confirmado',
   inRoute = 'Em rota',
   delivered = 'Entregue',
-  complete = 'Completo',
   canceled = 'Cancelado',
   rejected = 'Frustrado'
+}
+
+export const OrderStatusColor = {
+  scheduled: {main: 'gray', light: 'disabled'},
+  confirmed: {main: 'warn.main', light: 'warn.light'},
+  inRoute: {main: 'warn.main', light: 'warn.light'},
+  delivered: {main: 'success.main', light: 'success.light'},
+  canceled: {main: 'danger.main', light: 'danger.light'},
+  rejected: {main: 'danger.main', light: 'danger.light'}
 }
