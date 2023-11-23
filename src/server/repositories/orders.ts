@@ -1,5 +1,4 @@
 import db from '../db'
-import {Prisma} from '@prisma/client'
 import {ICreateOrder, IUpdateOrder, IGetOrdersByUserId} from '@/validation'
 
 export const createNewOrder = async (input: ICreateOrder) => {
@@ -8,8 +7,7 @@ export const createNewOrder = async (input: ICreateOrder) => {
   const userExists = await db.user.findFirst({
     where: {id: input.userId}
   })
-  console.log(userExists)
-  console.log(input.userId)
+
   if (!userExists) {
     throw new Error(`Usuário de id "${input.userId}" não encontrado.`)
   }
@@ -17,6 +15,8 @@ export const createNewOrder = async (input: ICreateOrder) => {
   const order = await db.order.create({
     data: {
       ...body,
+      status: 'scheduled',
+      commission: 10.6,
       offers: {
         create: offers?.map((details) => ({
           offerId: details.offerId,
@@ -33,33 +33,20 @@ export const createNewOrder = async (input: ICreateOrder) => {
   }
 }
 
-export const patchOrder = async (input: IUpdateOrder) => {
+export const patchOrder = async (userId: string, input: IUpdateOrder) => {
   const {offers, ...body} = input
 
   const userExists = await db.user.findFirst({
-    where: {id: input.userId}
+    where: {id: userId}
   })
-  console.log(userExists)
-  console.log(input.userId)
-  if (!userExists) {
-    throw new Error(`Usuário de id "${input.userId}" não encontrado.`)
-  }
 
-  const order = await db.order.create({
-    data: {
-      ...body,
-      offers: {
-        create: offers?.map((details) => ({
-          offerId: details.offerId,
-          variantIds: details.variantsInfo
-        }))
-      }
-    }
-  })
+  if (!userExists) {
+    throw new Error(`Usuário de id "${userId}" não encontrado.`)
+  }
 
   return {
     status: 201,
-    order,
+    order: null as any,
     message: 'Account created successfully'
   }
 }
@@ -76,9 +63,25 @@ export const fetchOrdersByUserId = async ({userId}: IGetOrdersByUserId) => {
     include: {offers: true}
   })
 
+  const offerIds: string[] = []
+
+  orders.forEach((order) => {
+    order.offers.forEach((offer) => {
+      if (!offerIds.includes(offer.id)) {
+        offerIds.push(offer.id)
+      }
+    })
+  })
+
+  const offers = await db.order.findMany({
+    where: {id: {in: offerIds}},
+    include: {offers: true}
+  })
+
   return {
     status: 200,
     orders,
+    offers,
     message: 'Orders fetched successfully'
   }
 }

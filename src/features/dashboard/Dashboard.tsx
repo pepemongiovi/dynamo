@@ -6,7 +6,7 @@ import Button from '@/components/common/Button'
 import {Search} from '@mui/icons-material'
 import FormInput from '@/components/common/FormInput'
 import useDashboard from './useDashboard'
-import Table from '@/components/common/Table'
+import OrdersTable from '@/components/common/OrdersTable'
 import {useRouter} from 'next/router'
 import {CircularProgress, Typography} from '@mui/material'
 
@@ -40,7 +40,7 @@ const Dashboard: FC = () => {
       {isLoading ? (
         <CircularProgress sx={{alignSelf: 'center', justifySelf: 'center'}} />
       ) : orders?.length ? (
-        <Table rows={orders} />
+        <OrdersTable rows={orders} />
       ) : (
         <Typography color="placeholder">Nenhum pedido realizado</Typography>
       )}

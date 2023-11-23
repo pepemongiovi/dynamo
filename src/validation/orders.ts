@@ -1,6 +1,7 @@
 import * as z from 'zod'
 import {productVariantSchema} from './products'
 import {offerSchema} from './offers'
+import {OrderStatusEnum} from '@/types/utils'
 
 export const addressSchema = z.object({
   zipcode: z.string(),
@@ -20,7 +21,17 @@ export const orderSchema = z.object({
   offers: z.array(offerSchema),
   shift: z.string(),
   observations: z.string().optional(),
-  date: z.date()
+  date: z.date(),
+  commission: z.number(),
+  status: z.enum([
+    OrderStatusEnum.canceled,
+    OrderStatusEnum.complete,
+    OrderStatusEnum.confirmed,
+    OrderStatusEnum.delivered,
+    OrderStatusEnum.inRoute,
+    OrderStatusEnum.rejected,
+    OrderStatusEnum.scheduled
+  ])
 })
 
 export const offerData = z.object({
@@ -55,7 +66,17 @@ export const updateOrderSchema = z.object({
   addressInfo: addressSchema,
   shift: z.string(),
   observations: z.string().optional(),
-  date: z.date()
+  date: z.date(),
+  commission: z.number(),
+  status: z.enum([
+    OrderStatusEnum.canceled,
+    OrderStatusEnum.complete,
+    OrderStatusEnum.confirmed,
+    OrderStatusEnum.delivered,
+    OrderStatusEnum.inRoute,
+    OrderStatusEnum.rejected,
+    OrderStatusEnum.scheduled
+  ])
 })
 
 export const getOrdersByUserId = z.object({

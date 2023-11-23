@@ -141,17 +141,6 @@ export default function useNewOrder() {
     }
   }
 
-  // cep: '58400-137',
-  // logradouro: 'Rua Governador Agamenon Magalhães',
-  // complemento: '',
-  // bairro: 'Centro',
-  // localidade: 'Campina Grande',
-  // uf: 'PB',
-  // ibge: '2504009',
-  // gia: '',
-  // ddd: '83',
-  // siafi: '1981'
-
   useEffect(() => {
     autofillAddress()
   }, [debouncedSearchTerm])

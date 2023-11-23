@@ -41,3 +41,13 @@ export const statesOpts = [
   {name: 'Sergipe', shortName: 'SE'},
   {name: 'Tocantins', shortName: 'TO'}
 ]
+
+export enum OrderStatusEnum {
+  scheduled = 'Agendado',
+  confirmed = 'Confirmado',
+  inRoute = 'Em rota',
+  delivered = 'Entregue',
+  complete = 'Completo',
+  canceled = 'Cancelado',
+  rejected = 'Frustrado'
+}

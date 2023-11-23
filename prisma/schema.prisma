@@ -71,6 +71,7 @@ model Order {
   name           String
   phone          String 
   status         OrderStatus
+  commission     Float
   offerIds       String[]                @db.ObjectId
   offers         OfferDetails[]            
   userId         String                  @db.ObjectId

@@ -14,17 +14,19 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
-  FormControlLabel,
-  Switch,
-  Box,
+  Stack,
   alpha,
-  Stack
+  Box
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import {visuallyHidden} from '@mui/utils'
 import {OrderData} from '@/validation'
 import {format} from 'date-fns'
+import Button from './Button'
+import {EditSharp, WhatsApp} from '@mui/icons-material'
+import {OrderStatus, OrderStatus as OrderStatusType} from '@prisma/client'
+import {OrderStatusEnum} from '@/types/utils'
 
 type Data = OrderData
 
@@ -77,28 +79,34 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'name',
+    id: 'date',
     numeric: false,
     disablePadding: true,
+    label: 'Data'
+  },
+  {
+    id: 'name',
+    numeric: false,
+    disablePadding: false,
     label: 'Cliente'
   },
   {
-    id: 'phone',
-    numeric: true,
-    disablePadding: false,
-    label: 'Telefone'
-  },
-  {
-    id: 'shift',
+    id: 'offers',
     numeric: false,
     disablePadding: false,
-    label: 'Período'
+    label: 'Ofertas'
   },
   {
-    id: 'date',
+    id: 'commission',
     numeric: false,
     disablePadding: false,
-    label: 'Data'
+    label: 'Comissão'
+  },
+  {
+    id: 'status',
+    numeric: false,
+    disablePadding: false,
+    label: 'Status'
   }
 ]
 
@@ -145,7 +153,7 @@ function TableHead(props: TableProps) {
         {headCells.map((headCell, idx) => (
           <TableCell
             key={headCell.id}
-            align={idx === 0 ? 'left' : 'right'}
+            align={idx <= 1 ? 'left' : 'right'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -225,15 +233,13 @@ function TableToolbar(props: TableToolbarProps) {
   )
 }
 
-export default function Table({rows}: {rows: OrderData[]}) {
+export default function OrdersTable({rows}: {rows: OrderData[]}) {
   const [order, setOrder] = React.useState<Order>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof Data>('date')
   const [selected, setSelected] = React.useState<readonly string[]>([])
   const [page, setPage] = React.useState(0)
-  const [dense, setDense] = React.useState(true)
+  const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(15)
-
-  console.log(123, rows)
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -302,14 +308,14 @@ export default function Table({rows}: {rows: OrderData[]}) {
       ),
     [order, orderBy, page, rowsPerPage]
   )
-  console.log(selected)
+
   const renderTableCells = React.useCallback(() => {
     return (
       <>
         {visibleRows.map((row, index) => {
           const isItemSelected = isSelected(row.name as string)
           const labelId = `table-checkbox-${index}`
-          console.log(isItemSelected)
+          console.log(45555, row)
           return (
             <TableRow
               hover
@@ -330,18 +336,32 @@ export default function Table({rows}: {rows: OrderData[]}) {
                   }}
                 />
               </TableCell>
-              <TableCell component="th" id={labelId} scope="row" padding="none">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.phone}</TableCell>
-              <TableCell align="right">{row.shift}</TableCell>
-              <TableCell align="right">
+              <TableCell component="th" scope="row" padding="none">
                 <Typography fontSize={14}>
                   {format(new Date(row.date), 'dd/LL/yyyy')}
                 </Typography>
                 <Typography color="placeholder">
                   {format(new Date(row.date), 'hh:mm')}
                 </Typography>
+              </TableCell>
+              <TableCell align="left">
+                <Stack>
+                  <Typography>{row.name}</Typography>
+                  <Typography
+                    fontSize={13}
+                    color="placeholder"
+                    sx={{display: 'flex', alignItems: 'center', gap: 0.3}}
+                  >
+                    <WhatsApp sx={{width: 12, height: 12}} /> {row.phone}
+                  </Typography>
+                </Stack>
+              </TableCell>
+              <TableCell align="right">Duas calcinhas + shorte</TableCell>
+              <TableCell align="right">
+                R$ {Number(row.commission).toFixed(2)}
+              </TableCell>
+              <TableCell align="right">
+                {OrderStatusEnum[row.status as OrderStatus]}
               </TableCell>
             </TableRow>
           )
