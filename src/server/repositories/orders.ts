@@ -51,16 +51,24 @@ export const patchOrder = async (userId: string, input: IUpdateOrder) => {
   }
 }
 
-export const fetchOrdersByUserId = async ({userId}: IGetOrdersByUserId) => {
+export const fetchOrdersByUserId = async ({
+  userId,
+  page,
+  pageSize
+}: IGetOrdersByUserId) => {
+  console.log(userId)
   const userExists = await db.user.findFirst({
     where: {id: userId}
   })
   if (!userExists) {
     throw new Error(`Usuário de id "${userId}" não encontrado.`)
   }
+
   const orders = await db.order.findMany({
     where: {userId},
-    include: {offers: true}
+    include: {offers: true},
+    skip: (page - 1) * pageSize,
+    take: pageSize
   })
 
   const offerIds: string[] = []

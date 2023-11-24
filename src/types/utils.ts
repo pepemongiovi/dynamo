@@ -1,3 +1,5 @@
+import {OrderStatus} from '@prisma/client'
+
 export type PartiallyRequired<T, P extends keyof T> = {
   [K in P]-?: NonNullable<T[K]>
 } & {
@@ -50,6 +52,15 @@ export enum OrderStatusEnum {
   canceled = 'Cancelado',
   rejected = 'Frustrado'
 }
+
+export const orderStatusOpts = [
+  OrderStatus.canceled,
+  OrderStatus.confirmed,
+  OrderStatus.delivered,
+  OrderStatus.inRoute,
+  OrderStatus.rejected,
+  OrderStatus.scheduled
+]
 
 export const OrderStatusColor = {
   scheduled: {main: 'gray', light: 'disabled'},

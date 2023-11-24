@@ -1,18 +1,16 @@
 import Layout from '@/layouts/Layout'
-import Login from '@/pages/app/login'
 import {Stack} from '@mui/system'
 import {FC} from 'react'
 import Button from '@/components/common/Button'
 import {Search} from '@mui/icons-material'
 import FormInput from '@/components/common/FormInput'
-import useDashboard from './useDashboard'
-import OrdersTable from '@/components/common/OrdersTable'
 import {useRouter} from 'next/router'
-import {CircularProgress, Typography} from '@mui/material'
+import OrdersTable from '@/components/orders-table/OrdersTable'
+import useDashboard from './useDashboard'
 
 const Dashboard: FC = () => {
   const router = useRouter()
-  const {control, orders, isLoading} = useDashboard()
+  const {control, userId} = useDashboard()
 
   const goToOrderRegisterForm = () => router.push('/app/new-order')
 
@@ -37,13 +35,7 @@ const Dashboard: FC = () => {
         </Button>
       </Stack>
 
-      {isLoading ? (
-        <CircularProgress sx={{alignSelf: 'center', justifySelf: 'center'}} />
-      ) : orders?.length ? (
-        <OrdersTable rows={orders} />
-      ) : (
-        <Typography color="placeholder">Nenhum pedido realizado</Typography>
-      )}
+      <OrdersTable userId={userId} />
     </Layout>
   )
 }

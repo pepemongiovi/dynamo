@@ -1,7 +1,8 @@
 import * as z from 'zod'
 import {productVariantSchema} from './products'
 import {offerSchema} from './offers'
-import {OrderStatusEnum} from '@/types/utils'
+import {OrderStatusEnum, orderStatusOpts} from '@/types/utils'
+import {OrderStatus} from '@prisma/client'
 
 export const addressSchema = z.object({
   zipcode: z.string(),
@@ -23,14 +24,7 @@ export const orderSchema = z.object({
   observations: z.string().optional(),
   date: z.date(),
   commission: z.number(),
-  status: z.enum([
-    OrderStatusEnum.canceled,
-    OrderStatusEnum.confirmed,
-    OrderStatusEnum.delivered,
-    OrderStatusEnum.inRoute,
-    OrderStatusEnum.rejected,
-    OrderStatusEnum.scheduled
-  ])
+  status: z.enum(orderStatusOpts as [string, ...string[]])
 })
 
 export const offerData = z.object({
@@ -67,18 +61,13 @@ export const updateOrderSchema = z.object({
   observations: z.string().optional(),
   date: z.date(),
   commission: z.number(),
-  status: z.enum([
-    OrderStatusEnum.canceled,
-    OrderStatusEnum.confirmed,
-    OrderStatusEnum.delivered,
-    OrderStatusEnum.inRoute,
-    OrderStatusEnum.rejected,
-    OrderStatusEnum.scheduled
-  ])
+  status: z.enum(orderStatusOpts as [string, ...string[]])
 })
 
 export const getOrdersByUserId = z.object({
-  userId: z.string()
+  userId: z.string(),
+  page: z.number(),
+  pageSize: z.number()
 })
 
 export type OrderData = z.infer<typeof orderSchema>

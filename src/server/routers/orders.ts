@@ -13,13 +13,21 @@ export default createRouter().merge(
         return {...result}
       }
     })
-    .mutation('getByUserId', {
+    .query('getByUserId', {
       input: z.object({
-        userId: z.string()
+        userId: z.string(),
+        page: z.number(),
+        pageSize: z.number()
       }),
       async resolve({ctx, input}) {
-        const response = await getOrdersByUserId({userId: input.userId})
+        const response = await getOrdersByUserId(input)
         return {error: null, success: true, orders: response.orders}
+      }
+    })
+    .query('test', {
+      async resolve({ctx, input}) {
+        console.log('hmmm')
+        return {error: null, success: true}
       }
     })
 )
