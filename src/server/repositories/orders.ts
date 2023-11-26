@@ -1,5 +1,7 @@
+import {ObjectId} from 'mongodb'
 import db from '../db'
 import {ICreateOrder, IUpdateOrder, IGetOrdersByUserId} from '@/validation'
+import {Order, OrderStatus} from '@prisma/client'
 
 export const createNewOrder = async (input: ICreateOrder) => {
   const {offers, ...body} = input
@@ -33,21 +35,39 @@ export const createNewOrder = async (input: ICreateOrder) => {
   }
 }
 
-export const patchOrder = async (userId: string, input: IUpdateOrder) => {
-  const {offers, ...body} = input
+export const patchOrder = async (input: IUpdateOrder) => {
+  const {id, offers, ...updatedOrder} = input
 
-  const userExists = await db.user.findFirst({
-    where: {id: userId}
+  const orderExists = await db.order.findFirst({
+    where: {id}
   })
 
-  if (!userExists) {
-    throw new Error(`Usuário de id "${userId}" não encontrado.`)
+  if (!orderExists) {
+    throw new Error(`Pedido não encontrado.`)
   }
 
+  await db.order.update({
+    where: {id},
+    data: updatedOrder as Order
+  })
+
   return {
-    status: 201,
+    status: 200,
     order: null as any,
-    message: 'Account created successfully'
+    message: 'Pedido atualizado com sucesso!'
+  }
+}
+
+export const updateOrdersStatusByIds = async (ids: string[]) => {
+  await db.order.updateMany({
+    where: {id: {in: ids}},
+    data: {status: OrderStatus.canceled}
+  })
+
+  return {
+    status: 200,
+    order: null as any,
+    message: 'Pedidos atualizados com sucesso!'
   }
 }
 

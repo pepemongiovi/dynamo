@@ -35,8 +35,9 @@ const theme = createTheme({
       light: '#81c784'
     },
     info: {
-      main: '#ddffff',
-      light: '#2196F3'
+      dark: '#01579b',
+      main: '#0288d1',
+      light: '#03a9f4'
     }
   } as any
 })

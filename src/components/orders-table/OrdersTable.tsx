@@ -18,20 +18,20 @@ import TableCells from './TableCells'
 const OrdersTable = ({userId}: {userId?: string}) => {
   const {
     orders,
-    isLoading,
+    ordersToCancel,
+    isUpdatingOrders,
+    isFetchingOrders,
     selectedOrders,
     page,
     pageSize,
     emptyRows,
     totalOrdersCount,
+    handleCancelOrders,
     handleChangePage,
     handleChangeRowsPerPage,
-    handleSelectAllClick,
     handleClick,
     isSelected
   } = useOrdersTable({userId})
-
-  console.log(orders)
 
   return totalOrdersCount === null ? (
     <CircularProgress sx={{alignSelf: 'center', justifySelf: 'center'}} />
@@ -40,24 +40,27 @@ const OrdersTable = ({userId}: {userId?: string}) => {
   ) : (
     <Box sx={{width: '100%', boxShadow: '3px 3px 8px 3px #474787'}}>
       <Paper sx={{width: '100%'}}>
-        <TableToolbar numSelected={selectedOrders.length} />
+        <TableToolbar
+          numSelected={selectedOrders.length}
+          isUpdatingOrders={isUpdatingOrders}
+          handleCancelOrders={handleCancelOrders}
+        />
         <TableContainer>
           <MuiTable aria-labelledby="tableTitle" size="medium">
-            <TableHead
-              numSelected={selectedOrders.length}
-              onSelectAllClick={handleSelectAllClick}
-              totalOrdersCount={totalOrdersCount}
-            />
+            <TableHead numSelected={selectedOrders.length} />
             <TableBody sx={{position: 'relative'}}>
               <TableCells
                 handleClick={handleClick}
+                handleCancelOrders={handleCancelOrders}
                 isSelected={isSelected}
                 emptyRows={emptyRows}
                 orders={orders}
                 selectedOrders={selectedOrders}
+                isUpdatingOrders={isUpdatingOrders}
+                ordersToCancel={ordersToCancel}
               />
 
-              {isLoading && (
+              {isFetchingOrders && (
                 <Typography
                   sx={{
                     alignSelf: 'center',
@@ -76,7 +79,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
             </TableBody>
           </MuiTable>
         </TableContainer>
-        {isLoading ? (
+        {isFetchingOrders ? (
           <Stack
             sx={{height: 52, pr: 2}}
             alignItems="end"

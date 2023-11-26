@@ -2,7 +2,9 @@ import {OrderStatusColor, OrderStatusEnum} from '@/types/utils'
 import {OrderData} from '@/validation'
 import {BlockOutlined, WhatsApp} from '@mui/icons-material'
 import {
+  Box,
   Checkbox,
+  CircularProgress,
   Stack,
   TableCell,
   TableRow,
@@ -31,21 +33,33 @@ const TableCells = ({
   orders,
   selectedOrders,
   emptyRows,
+  isUpdatingOrders,
+  ordersToCancel,
   isSelected,
-  handleClick
+  handleClick,
+  handleCancelOrders
 }: {
   orders: OrderData[]
-  selectedOrders: readonly string[]
+  selectedOrders: string[]
   emptyRows: number
+  isUpdatingOrders: boolean
+  ordersToCancel: string[]
   isSelected: (name: string) => boolean
   handleClick: (name: string) => void
+  handleCancelOrders: (orderIds: string[]) => void
 }) => {
   const rowHeight = 76
+
+  const cancelOrder = (e: any, orderId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleCancelOrders([orderId])
+  }
 
   return (
     <>
       {orders?.map((order, index) => {
-        const isItemSelected = isSelected(order.name as string)
+        const isItemSelected = isSelected(order.id as string)
         const labelId = `table-checkbox-${index}`
 
         const statusLabel = OrderStatusEnum[order.status as OrderStatus]
@@ -57,16 +71,19 @@ const TableCells = ({
         return (
           <TableRow
             hover
-            onClick={() => handleClick(order.name as string)}
+            onClick={() =>
+              cancelOrderEnabled ? handleClick(order.id as string) : {}
+            }
             role="checkbox"
             aria-checked={isItemSelected}
             tabIndex={-1}
-            key={order.name}
+            key={order.id}
             selected={isItemSelected}
             sx={{cursor: 'pointer'}}
           >
             <TableCell padding="checkbox">
               <Checkbox
+                disabled={!cancelOrderEnabled || isUpdatingOrders}
                 color="primary"
                 checked={isItemSelected}
                 inputProps={{
@@ -74,6 +91,7 @@ const TableCells = ({
                 }}
               />
             </TableCell>
+
             <TableCell component="th" scope="row" padding="none">
               <Typography fontSize={15}>
                 {format(new Date(order.date), 'dd/LL/yyyy')}
@@ -82,6 +100,7 @@ const TableCells = ({
                 {format(new Date(order.date), 'hh:mm')}
               </Typography>
             </TableCell>
+
             <TableCell align="left">
               <Stack justifyContent="center">
                 <TableText lineClamp={1} value={order.name} />
@@ -99,6 +118,7 @@ const TableCells = ({
                 </Typography>
               </Stack>
             </TableCell>
+
             <TableCell align="left">
               <TableText
                 lineClamp={2}
@@ -111,39 +131,58 @@ const TableCells = ({
                 }
               />
             </TableCell>
+
             <TableCell align="left">
               R$ {Number(order.commission).toFixed(2)}
             </TableCell>
+
             <TableCell align="left" sx={{width: 100}}>
-              <Stack
-                alignItems="center"
-                justifyContent="center"
+              <Box
                 sx={{
-                  bgcolor: statusColor.light,
-                  width: 100,
                   borderRadius: 5,
                   border: '1.5px solid',
-                  borderColor: statusColor.main,
-
-                  py: 0.3
+                  borderColor: statusColor.main
                 }}
               >
-                <Typography color="white" fontSize={15}>
-                  {statusLabel}
-                </Typography>
-              </Stack>
+                <Stack
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{
+                    bgcolor: statusColor.light,
+                    width: 100,
+                    borderRadius: 5,
+                    py: 0.3,
+                    opacity: 0.8
+                  }}
+                >
+                  <Typography color="white" fontSize={15}>
+                    {statusLabel}
+                  </Typography>
+                </Stack>
+              </Box>
             </TableCell>
+
             {!selectedOrders.length && (
               <TableCell align="right">
                 <Tooltip
                   title={
                     !cancelOrderEnabled
-                      ? ''
+                      ? 'O pedido não pode mais ser cancelado'
                       : `Cancelar pedido${selectedOrders.length > 1 ? 's' : ''}`
                   }
                 >
-                  <BlockOutlined
-                    color={cancelOrderEnabled ? 'error' : 'disabled'}
+                  <Box
+                    component={
+                      isUpdatingOrders && ordersToCancel.includes(order.id)
+                        ? CircularProgress
+                        : BlockOutlined
+                    }
+                    onClick={(e: any) =>
+                      cancelOrderEnabled ? cancelOrder(e, order.id) : {}
+                    }
+                    sx={{cursor: cancelOrderEnabled ? 'pointer' : 'default'}}
+                    color={cancelOrderEnabled ? '#d32f2f' : 'disabled'}
+                    size={24}
                   />
                 </Tooltip>
               </TableCell>

@@ -15,6 +15,7 @@ export const addressSchema = z.object({
 })
 
 export const orderSchema = z.object({
+  id: z.string(),
   name: z.string(),
   phone: z.string(),
   addressInfo: addressSchema,
@@ -53,15 +54,16 @@ export const createOrderSchema = z.object({
 })
 
 export const updateOrderSchema = z.object({
-  name: z.string(),
-  offers: z.array(offerData),
-  phone: z.string(),
-  addressInfo: addressSchema,
-  shift: z.string(),
+  id: z.string(),
+  name: z.string().optional(),
+  offers: z.array(offerData).optional(),
+  phone: z.string().optional(),
+  addressInfo: addressSchema.optional(),
+  shift: z.string().optional(),
   observations: z.string().optional(),
-  date: z.date(),
-  commission: z.number(),
-  status: z.enum(orderStatusOpts as [string, ...string[]])
+  date: z.date().optional(),
+  commission: z.number().optional(),
+  status: z.enum(orderStatusOpts as [string, ...string[]]).optional()
 })
 
 export const getOrdersByUserId = z.object({

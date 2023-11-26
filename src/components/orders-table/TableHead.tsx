@@ -13,7 +13,7 @@ interface HeadCell {
   numeric: boolean
 }
 
-const headCells: readonly HeadCell[] = [
+const headCells: HeadCell[] = [
   {
     id: 'date',
     numeric: false,
@@ -48,20 +48,14 @@ const headCells: readonly HeadCell[] = [
 
 interface TableHeadProps {
   numSelected: number
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void
-  totalOrdersCount: number
 }
 
-function TableHead({
-  onSelectAllClick,
-  numSelected,
-  totalOrdersCount
-}: TableHeadProps) {
+function TableHead({numSelected}: TableHeadProps) {
   return (
     <MuiTableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <Checkbox
+          {/* <Checkbox
             color="primary"
             indeterminate={numSelected > 0 && numSelected < totalOrdersCount}
             checked={totalOrdersCount > 0 && numSelected === totalOrdersCount}
@@ -69,7 +63,7 @@ function TableHead({
             inputProps={{
               'aria-label': 'select all desserts'
             }}
-          />
+          /> */}
         </TableCell>
         {headCells.map((headCell, idx) => (
           <TableCell

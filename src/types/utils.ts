@@ -64,9 +64,9 @@ export const orderStatusOpts = [
 
 export const OrderStatusColor = {
   scheduled: {main: 'gray', light: 'disabled'},
-  confirmed: {main: 'warn.main', light: 'warn.light'},
-  inRoute: {main: 'warn.main', light: 'warn.light'},
-  delivered: {main: 'success.main', light: 'success.light'},
-  canceled: {main: 'danger.main', light: 'danger.light'},
-  rejected: {main: 'danger.main', light: 'danger.light'}
+  confirmed: {main: 'info.dark', light: 'info.light'},
+  inRoute: {main: 'warn.dark', light: 'warn.light'},
+  delivered: {main: 'success.dark', light: 'success.light'},
+  canceled: {main: 'danger.dark', light: 'danger.light'},
+  rejected: {main: 'danger.dark', light: 'danger.light'}
 }

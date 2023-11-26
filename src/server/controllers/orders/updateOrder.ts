@@ -1,9 +1,9 @@
-import {createNewOrder} from '@/server/repositories'
-import {ICreateOrder} from '@/validation'
+import {patchOrder} from '@/server/repositories'
+import {IUpdateOrder} from '@/validation'
 
-export const updateOrder = async (input: ICreateOrder) => {
+export const updateOrder = async (input: IUpdateOrder) => {
   try {
-    const order = await createNewOrder(input)
+    const order = await patchOrder(input)
     return order
   } catch (error) {
     console.error(error)

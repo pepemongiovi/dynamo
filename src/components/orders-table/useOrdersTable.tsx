@@ -2,14 +2,17 @@ import React, {useMemo, useState} from 'react'
 import {useForm as useFormHook} from 'react-hook-form'
 import trpc from '@/utils/trpc'
 import {OrderData} from '@/validation'
+import {OrderStatus} from '@prisma/client'
+import {toast} from 'react-toastify'
 
 export default function useOrdersTable({userId}: {userId?: string}) {
   const [orders, setOrders] = useState<OrderData[]>([])
   const [totalOrdersCount, setTotalOrdersCount] = useState<number | null>(null)
-  const [selectedPage, setSelectedPage] = useState(1)
-  const [selectedOrders, setSelectedOrders] = React.useState<readonly string[]>(
-    []
-  )
+  const [selectedOrders, setSelectedOrders] = React.useState<string[]>([])
+  const [ordersToCancel, setOrdersToCancel] = useState<string[]>([])
+
+  const {isLoading: isUpdatingOrders, mutateAsync: updateOrdersStatus} =
+    trpc.useMutation(['orders.updateOrdersStatus'])
 
   const {
     handleSubmit,
@@ -36,13 +39,10 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     (!!userId && !totalOrdersCount) ||
     (!!totalOrdersCount &&
       totalOrdersCount > orders.length &&
-      orders.length < selectedPage * pageSize)
+      orders.length < page * pageSize)
 
-  const {isLoading} = trpc.useQuery(
-    [
-      'orders.getByUserId',
-      {userId: userId || '', page: selectedPage, pageSize}
-    ],
+  const {isLoading: isFetchingOrders} = trpc.useQuery(
+    ['orders.getByUserId', {userId: userId || '', page, pageSize}],
     {
       enabled: hasDataToFetch,
       onSuccess(data) {
@@ -50,18 +50,12 @@ export default function useOrdersTable({userId}: {userId?: string}) {
         setTotalOrdersCount(totalOrders)
         const loadedOrders = data.orders as any
 
-        if (
-          totalOrders > orders.length &&
-          orders.length < selectedPage * pageSize
-        ) {
-          setOrders([...orders, ...loadedOrders])
-        }
-        setValue('page', selectedPage)
+        setOrders([...orders, ...loadedOrders])
+
+        setValue('page', page)
       }
     }
   )
-
-  console.log(page)
 
   const filteredOrders = useMemo(
     () => orders.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize),
@@ -70,19 +64,19 @@ export default function useOrdersTable({userId}: {userId?: string}) {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = orders.map((n) => n.name)
+      const newSelected = orders.map((n) => n.id)
       setSelectedOrders(newSelected)
       return
     }
     setSelectedOrders([])
   }
 
-  const handleClick = (name: string) => {
-    const selectedIndex = selectedOrders.indexOf(name)
-    let newSelected: readonly string[] = []
+  const handleClick = (id: string) => {
+    const selectedIndex = selectedOrders.indexOf(id)
+    let newSelected: string[] = []
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selectedOrders, name)
+      newSelected = newSelected.concat(selectedOrders, id)
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selectedOrders.slice(1))
     } else if (selectedIndex === selectedOrders.length - 1) {
@@ -101,34 +95,64 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setValue('pageSize', Number(event.target.value))
-    setSelectedPage(1)
+    setValue('page', 1)
+    setOrders([])
   }
 
-  const isSelected = (name: string) => selectedOrders.indexOf(name) !== -1
+  const isSelected = (id: string) => selectedOrders.indexOf(id) !== -1
 
   // Avoid a layout jump when reaching the last page with empty orders.
-  const emptyRows = isLoading
-    ? pageSize
-    : totalOrdersCount && page * pageSize >= totalOrdersCount
-    ? pageSize - (totalOrdersCount % pageSize)
-    : 0
+  const emptyRows = useMemo(() => {
+    if (page === 1) return 0
+    if (isFetchingOrders) return pageSize
+    if (totalOrdersCount && page * pageSize >= totalOrdersCount) {
+      return pageSize - (totalOrdersCount % pageSize)
+    }
+    return 0
+  }, [page, pageSize, totalOrdersCount, isFetchingOrders])
 
   const handleChangePage = (newPage: number) => {
     const page = newPage + 1
     if (!hasDataToFetch) {
       setValue('page', page)
     }
-    setSelectedPage(page)
+  }
+
+  const handleCancelOrders = async (ids?: string[]) => {
+    const orderIds = ids || selectedOrders
+    setOrdersToCancel(orderIds)
+
+    await updateOrdersStatus(
+      {ids: orderIds},
+      {
+        onSuccess: () => {
+          setOrders(
+            orders.map((order) =>
+              orderIds.includes(order.id)
+                ? {...order, status: OrderStatus.canceled}
+                : order
+            )
+          )
+        },
+        onError: () => {
+          toast.error('Não foi possível cancelar o pedido')
+        }
+      }
+    )
+    setSelectedOrders([])
   }
 
   return {
     orders: filteredOrders,
-    isLoading,
+    ordersToCancel,
+    isUpdatingOrders,
+    isFetchingOrders,
     emptyRows,
     page,
     pageSize,
     selectedOrders,
     totalOrdersCount,
+    handleCancelOrders,
     handleChangePage,
     handleChangeRowsPerPage,
     handleSelectAllClick,
