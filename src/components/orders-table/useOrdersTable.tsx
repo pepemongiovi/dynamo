@@ -50,7 +50,7 @@ export default function useOrdersTable({userId}: {userId?: string}) {
         if (data.count !== null) {
           setTotalOrdersCount(totalOrders)
         }
-        const loadedOrders = data.orders as any
+        const loadedOrders = (data.orders as any) || []
 
         setOrders([...orders, ...loadedOrders])
 
