@@ -123,8 +123,10 @@ const TableCells = ({
               <TableText
                 lineClamp={2}
                 value={(order.offers as any).reduce(
-                  (result: string, offer: OrderData) =>
-                    `${result}${offer.name} `,
+                  (result: string, offer: OrderData, idx: number) =>
+                    `${result}${offer.name}${
+                      idx < order.offers.length - 1 ? '; ' : ''
+                    }`,
                   ''
                 )}
               />
