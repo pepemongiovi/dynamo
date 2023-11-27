@@ -23,7 +23,12 @@ export default createRouter().merge(
       }),
       async resolve({ctx, input}) {
         const response = await getOrdersByUserId(input)
-        return {error: null, success: true, orders: response.orders}
+        return {
+          error: null,
+          success: true,
+          orders: response.orders,
+          count: response.count
+        }
       }
     })
     .query('test', {

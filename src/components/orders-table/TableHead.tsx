@@ -3,7 +3,8 @@ import {
   TableHead as MuiTableHead,
   TableCell,
   TableRow,
-  Checkbox
+  Checkbox,
+  Typography
 } from '@mui/material'
 
 interface HeadCell {
@@ -77,7 +78,8 @@ function TableHead({numSelected}: TableHeadProps) {
                 direction={orderBy === headCell.id ? order : 'asc'}
                 onClick={createSortHandler(headCell.id)}
               > */}
-            {headCell.label}
+            <Typography fontSize={17}>{headCell.label}</Typography>
+
             {/* {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}

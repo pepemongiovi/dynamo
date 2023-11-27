@@ -122,18 +122,24 @@ const TableCells = ({
             <TableCell align="left">
               <TableText
                 lineClamp={2}
-                value={
-                  (order.offers as any).reduce(
-                    (result: string, offer: OrderData) =>
-                      `${result}${offer.name} `,
-                    ''
-                  ) || 'Calcinha modeladora - Compre 2 leve 3'
-                }
+                value={(order.offers as any).reduce(
+                  (result: string, offer: OrderData) =>
+                    `${result}${offer.name} `,
+                  ''
+                )}
               />
             </TableCell>
 
             <TableCell align="left">
-              R$ {Number(order.commission).toFixed(2)}
+              <Typography
+                color={
+                  order.status === OrderStatus.delivered
+                    ? 'success.main'
+                    : undefined
+                }
+              >
+                R$ {Number(order.commission).toFixed(2)}
+              </Typography>
             </TableCell>
 
             <TableCell align="left" sx={{width: 100}}>
@@ -167,8 +173,8 @@ const TableCells = ({
                 <Tooltip
                   title={
                     !cancelOrderEnabled
-                      ? 'O pedido não pode mais ser cancelado'
-                      : `Cancelar pedido${selectedOrders.length > 1 ? 's' : ''}`
+                      ? 'Cancelamento indisponível'
+                      : 'Cancelar pedido'
                   }
                 >
                   <Box

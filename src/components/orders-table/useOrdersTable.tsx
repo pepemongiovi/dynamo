@@ -46,8 +46,10 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     {
       enabled: hasDataToFetch,
       onSuccess(data) {
-        const totalOrders = 13
-        setTotalOrdersCount(totalOrders)
+        const totalOrders = data.count
+        if (data.count !== null) {
+          setTotalOrdersCount(totalOrders)
+        }
         const loadedOrders = data.orders as any
 
         setOrders([...orders, ...loadedOrders])
@@ -103,8 +105,8 @@ export default function useOrdersTable({userId}: {userId?: string}) {
 
   // Avoid a layout jump when reaching the last page with empty orders.
   const emptyRows = useMemo(() => {
-    if (page === 1) return 0
     if (isFetchingOrders) return pageSize
+    if (page === 1) return 0
     if (totalOrdersCount && page * pageSize >= totalOrdersCount) {
       return pageSize - (totalOrdersCount % pageSize)
     }
@@ -112,10 +114,7 @@ export default function useOrdersTable({userId}: {userId?: string}) {
   }, [page, pageSize, totalOrdersCount, isFetchingOrders])
 
   const handleChangePage = (newPage: number) => {
-    const page = newPage + 1
-    if (!hasDataToFetch) {
-      setValue('page', page)
-    }
+    setValue('page', newPage + 1)
   }
 
   const handleCancelOrders = async (ids?: string[]) => {

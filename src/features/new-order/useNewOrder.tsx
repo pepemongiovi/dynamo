@@ -165,7 +165,7 @@ export default function useNewOrder() {
         })
         if (res.order?.id) {
           toast.success('Seu pedido foi agendado!')
-          reset()
+          // reset()
         } else {
           throw new Error()
         }

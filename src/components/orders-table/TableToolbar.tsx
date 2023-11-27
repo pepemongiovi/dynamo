@@ -56,7 +56,7 @@ function TableToolbar({
           Pedidos realizados
         </Typography>
       )}
-      {numSelected > 0 ? (
+      {numSelected > 0 && (
         <Stack
           direction="row"
           spacing={1}
@@ -73,13 +73,12 @@ function TableToolbar({
             {`Cancelar pedido${numSelected > 1 ? 's' : ''}`}
           </Typography>
         </Stack>
-      ) : (
-        <Tooltip title="Filter list">
+      )}
+      {/* <Tooltip title="Filter list">
           <IconButton>
             <FilterListIcon />
           </IconButton>
-        </Tooltip>
-      )}
+        </Tooltip> */}
     </Toolbar>
   )
 }

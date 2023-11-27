@@ -3,10 +3,10 @@ import {IGetOrdersByUserId} from '@/validation'
 
 export const getOrdersByUserId = async (input: IGetOrdersByUserId) => {
   try {
-    const orders = await fetchOrdersByUserId(input)
-    return orders
+    const response = await fetchOrdersByUserId(input)
+    return response
   } catch (error) {
     console.error(error)
-    return {errors: String(error), orders: null}
+    return {errors: String(error), orders: null, count: null, success: false}
   }
 }

@@ -76,7 +76,6 @@ export const fetchOrdersByUserId = async ({
   page,
   pageSize
 }: IGetOrdersByUserId) => {
-  console.log(userId)
   const userExists = await db.user.findFirst({
     where: {id: userId}
   })
@@ -84,6 +83,12 @@ export const fetchOrdersByUserId = async ({
     throw new Error(`Usuário de id "${userId}" não encontrado.`)
   }
 
+  let count: number | null
+  if (page === 1) {
+    count = await db.order.count({where: {userId}})
+  } else {
+    count = null
+  }
   const orders = await db.order.findMany({
     where: {userId},
     include: {offers: true},
@@ -119,6 +124,7 @@ export const fetchOrdersByUserId = async ({
   return {
     status: 200,
     orders: result,
+    count,
     message: 'Orders fetched successfully'
   }
 }
