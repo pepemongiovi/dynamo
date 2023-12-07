@@ -4,8 +4,10 @@ import trpc from '@/utils/trpc'
 import {OrderData} from '@/validation'
 import {OrderStatus} from '@prisma/client'
 import {toast} from 'react-toastify'
+import {useRouter} from 'next/router'
 
 export default function useOrdersTable({userId}: {userId?: string}) {
+  const router = useRouter()
   const [orders, setOrders] = useState<OrderData[]>([])
   const [totalOrdersCount, setTotalOrdersCount] = useState<number | null>(null)
   const [selectedOrders, setSelectedOrders] = React.useState<string[]>([])
@@ -63,6 +65,8 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     () => orders.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize),
     [orders, page, pageSize]
   )
+
+  const handleEditOrder = (id: string) => router.push(`/app/orders/${id}`)
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -151,6 +155,7 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     pageSize,
     selectedOrders,
     totalOrdersCount,
+    handleEditOrder,
     handleCancelOrders,
     handleChangePage,
     handleChangeRowsPerPage,

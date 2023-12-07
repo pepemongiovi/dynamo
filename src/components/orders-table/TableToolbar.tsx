@@ -1,4 +1,4 @@
-import {BlockOutlined} from '@mui/icons-material'
+import {BlockOutlined, EditNote} from '@mui/icons-material'
 import {
   CircularProgress,
   IconButton,
@@ -9,18 +9,22 @@ import {
   alpha
 } from '@mui/material'
 import FilterListIcon from '@mui/icons-material/FilterList'
+import {useRouter} from 'next/router'
 
 interface TableToolbarProps {
-  numSelected: number
+  selectedOrderIds: string[]
   isUpdatingOrders: boolean
   handleCancelOrders: (orderIds?: string[]) => void
 }
 
 function TableToolbar({
-  numSelected,
+  selectedOrderIds,
   isUpdatingOrders,
   handleCancelOrders
 }: TableToolbarProps) {
+  const router = useRouter()
+  const numSelected = selectedOrderIds.length
+
   return (
     <Toolbar
       sx={{
@@ -57,21 +61,37 @@ function TableToolbar({
         </Typography>
       )}
       {numSelected > 0 && (
-        <Stack
-          direction="row"
-          spacing={1}
-          mr={1}
-          sx={{mr: 1, cursor: isUpdatingOrders ? 'default' : 'pointer'}}
-          onClick={() => (isUpdatingOrders ? {} : handleCancelOrders())}
-        >
-          {isUpdatingOrders ? (
-            <CircularProgress size={24} color="error" />
-          ) : (
-            <BlockOutlined color="error" />
-          )}
-          <Typography color="danger.dark" whiteSpace="nowrap">
-            {`Cancelar pedido${numSelected > 1 ? 's' : ''}`}
-          </Typography>
+        <Stack direction="row" spacing={1} mr={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            onClick={() => router.push(`/app/orders/${selectedOrderIds[0]}`)}
+            sx={{mr: 1, cursor: isUpdatingOrders ? 'default' : 'pointer'}}
+          >
+            {numSelected === 1 && (
+              <>
+                <EditNote />
+                <Typography whiteSpace="nowrap" pr={2}>
+                  Editar pedido
+                </Typography>
+              </>
+            )}
+          </Stack>
+          <Stack
+            direction="row"
+            spacing={1}
+            onClick={() => (isUpdatingOrders ? {} : handleCancelOrders())}
+            sx={{mr: 1, cursor: isUpdatingOrders ? 'default' : 'pointer'}}
+          >
+            {isUpdatingOrders ? (
+              <CircularProgress size={24} color="error" />
+            ) : (
+              <BlockOutlined color="error" />
+            )}
+            <Typography color="danger.dark" whiteSpace="nowrap">
+              {'Cancelar pedido(s)'}
+            </Typography>
+          </Stack>
         </Stack>
       )}
       {/* <Tooltip title="Filter list">

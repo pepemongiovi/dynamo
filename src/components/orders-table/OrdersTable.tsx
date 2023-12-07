@@ -27,6 +27,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
     emptyRows,
     totalOrdersCount,
     handleCancelOrders,
+    handleEditOrder,
     handleChangePage,
     handleChangeRowsPerPage,
     handleClick,
@@ -41,7 +42,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
     <Box sx={{width: '100%', boxShadow: '3px 3px 8px 3px #474787'}}>
       <Paper sx={{width: '100%'}}>
         <TableToolbar
-          numSelected={selectedOrders.length}
+          selectedOrderIds={selectedOrders}
           isUpdatingOrders={isUpdatingOrders}
           handleCancelOrders={handleCancelOrders}
         />
@@ -52,6 +53,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
               <TableCells
                 handleClick={handleClick}
                 handleCancelOrders={handleCancelOrders}
+                handleEditOrder={(id: string) => handleEditOrder(id)}
                 isSelected={isSelected}
                 emptyRows={emptyRows}
                 orders={orders}

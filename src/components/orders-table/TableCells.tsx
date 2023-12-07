@@ -1,6 +1,15 @@
 import {OrderStatusColor, OrderStatusEnum} from '@/types/utils'
 import {OrderData} from '@/validation'
-import {BlockOutlined, WhatsApp} from '@mui/icons-material'
+import {
+  BlockOutlined,
+  CopyAllOutlined,
+  Edit,
+  EditNote,
+  Visibility,
+  VisibilityOutlined,
+  VisibilityTwoTone,
+  WhatsApp
+} from '@mui/icons-material'
 import {
   Box,
   Checkbox,
@@ -13,6 +22,7 @@ import {
 } from '@mui/material'
 import {OrderStatus} from '@prisma/client'
 import {format} from 'date-fns'
+import {toast} from 'react-toastify'
 
 const TableText = ({value, lineClamp}: {value: string; lineClamp: number}) => (
   <Typography
@@ -37,7 +47,8 @@ const TableCells = ({
   ordersToCancel,
   isSelected,
   handleClick,
-  handleCancelOrders
+  handleCancelOrders,
+  handleEditOrder
 }: {
   orders: OrderData[]
   selectedOrders: string[]
@@ -47,6 +58,7 @@ const TableCells = ({
   isSelected: (name: string) => boolean
   handleClick: (name: string) => void
   handleCancelOrders: (orderIds: string[]) => void
+  handleEditOrder: (id: string) => void
 }) => {
   const rowHeight = 76
 
@@ -64,7 +76,7 @@ const TableCells = ({
 
         const statusLabel = OrderStatusEnum[order.status as OrderStatus]
         const statusColor = OrderStatusColor[order.status as OrderStatus]
-        const cancelOrderEnabled =
+        const editOrderEnabled =
           order.status === OrderStatus.scheduled ||
           order.status === OrderStatus.confirmed
 
@@ -72,7 +84,7 @@ const TableCells = ({
           <TableRow
             hover
             onClick={() =>
-              cancelOrderEnabled ? handleClick(order.id as string) : {}
+              editOrderEnabled ? handleClick(order.id as string) : {}
             }
             role="checkbox"
             aria-checked={isItemSelected}
@@ -83,7 +95,7 @@ const TableCells = ({
           >
             <TableCell padding="checkbox">
               <Checkbox
-                disabled={!cancelOrderEnabled || isUpdatingOrders}
+                disabled={!editOrderEnabled || isUpdatingOrders}
                 color="primary"
                 checked={isItemSelected}
                 inputProps={{
@@ -105,16 +117,24 @@ const TableCells = ({
               <Stack justifyContent="center">
                 <TableText lineClamp={1} value={order.name} />
                 <Typography
-                  fontSize={13}
+                  fontSize={14}
                   color="placeholder"
                   whiteSpace="nowrap"
                   sx={{display: 'flex', alignItems: 'center', gap: 0.3}}
                 >
                   <WhatsApp
-                    sx={{width: 12, height: 12, mb: -0.15}}
+                    sx={{width: 14, height: 14, mb: -0.15}}
                     color="success"
                   />
                   {order.phone}
+                  <CopyAllOutlined
+                    sx={{width: 16, height: 16, marginLeft: 0.2}}
+                    onClick={(e: any) => {
+                      e.stopPropagation()
+                      navigator.clipboard.writeText(order.phone)
+                      toast.info('Telefone copiado!')
+                    }}
+                  />
                 </Typography>
               </Stack>
             </TableCell>
@@ -172,27 +192,50 @@ const TableCells = ({
 
             {!selectedOrders.length && (
               <TableCell align="right">
-                <Tooltip
-                  title={
-                    !cancelOrderEnabled
-                      ? 'Cancelamento indisponível'
-                      : 'Cancelar pedido'
-                  }
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  onClick={() => handleEditOrder(order.id)}
                 >
-                  <Box
-                    component={
-                      isUpdatingOrders && ordersToCancel.includes(order.id)
-                        ? CircularProgress
-                        : BlockOutlined
+                  <Tooltip
+                    title={
+                      editOrderEnabled ? 'Alterar pedido' : 'Visualizar pedido'
                     }
-                    onClick={(e: any) =>
-                      cancelOrderEnabled ? cancelOrder(e, order.id) : {}
+                  >
+                    <Box
+                      width={25}
+                      height={25}
+                      component={
+                        editOrderEnabled ? EditNote : VisibilityTwoTone
+                      }
+                      onClick={(e: any) =>
+                        editOrderEnabled ? cancelOrder(e, order.id) : {}
+                      }
+                    />
+                  </Tooltip>
+
+                  <Tooltip
+                    title={
+                      editOrderEnabled
+                        ? 'Cancelar pedido'
+                        : 'Cancelamento indisponível'
                     }
-                    sx={{cursor: cancelOrderEnabled ? 'pointer' : 'default'}}
-                    color={cancelOrderEnabled ? '#d32f2f' : 'disabled'}
-                    size={24}
-                  />
-                </Tooltip>
+                  >
+                    <Box
+                      component={
+                        isUpdatingOrders && ordersToCancel.includes(order.id)
+                          ? CircularProgress
+                          : BlockOutlined
+                      }
+                      onClick={(e: any) =>
+                        editOrderEnabled ? cancelOrder(e, order.id) : {}
+                      }
+                      sx={{cursor: editOrderEnabled ? 'pointer' : 'default'}}
+                      color={editOrderEnabled ? '#d32f2f' : 'disabled'}
+                      size={24}
+                    />
+                  </Tooltip>
+                </Stack>
               </TableCell>
             )}
           </TableRow>
