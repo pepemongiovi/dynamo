@@ -15,6 +15,7 @@ import {ICreateOrder, OfferData} from '@/validation'
 import {findAddress} from '@/services/viacep-api'
 import {useDebounce} from '@/hooks/useDebounce'
 import {toast} from 'react-toastify'
+import {useRouter} from 'next/router'
 
 export const getVariantLabel = (variant: Variant, productName: string) => {
   const sizeLabel = `Tamanho ${variant.size}`
@@ -30,9 +31,11 @@ export const getVariantLabel = (variant: Variant, productName: string) => {
   return `${productName} - ${variantLabel}`
 }
 
-export default function useNewOrder() {
-  const {data} = useSession()
+export default function useOrderDetails() {
+  const router = useRouter()
+  const {id} = router.query
 
+  const {data} = useSession()
   const {isLoading, ...loader} = useLoader()
 
   const [isZipcodeInvalid, setIsZipcodeInvalid] = useState(false)
@@ -43,6 +46,10 @@ export default function useNewOrder() {
 
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
   const createOrder = trpc.useMutation(['orders.create'])
+  const getOrderById = trpc.useQuery(
+    ['orders.getById', {id: (id as string) || ''}],
+    {enabled: !!id}
+  )
 
   const onEditOffer = (offerIdx: number) => {
     setEditingOfferIdx(offerIdx)
@@ -64,10 +71,8 @@ export default function useNewOrder() {
     formState: {errors, isValid},
     getValues,
     setValue,
-    setError,
     clearErrors,
     control,
-    reset,
     watch
   } = useFormHook<ICreateOrder>({
     defaultValues: {
@@ -124,6 +129,7 @@ export default function useNewOrder() {
           district: address.bairro,
           city: address.localidade,
           state: address.uf,
+
           complement: address.complemento || getValues('addressInfo.complement')
         })
         setIsZipcodeInvalid(false)
@@ -140,10 +146,6 @@ export default function useNewOrder() {
       setValue('addressInfo.complement', emptyAddress.complement)
     }
   }
-
-  useEffect(() => {
-    autofillAddress()
-  }, [debouncedSearchTerm])
 
   const onSubmit = useCallback(
     loader.action(async ({offers, ...newOrder}: ICreateOrder) => {
@@ -193,6 +195,26 @@ export default function useNewOrder() {
   useEffect(() => {
     loadAllProducts()
   }, [data])
+
+  useEffect(() => {
+    autofillAddress()
+  }, [debouncedSearchTerm])
+
+  useEffect(() => {
+    const order = getOrderById.data?.order
+
+    if (order) {
+      setValue('name', order.name)
+      setValue('date', order.date)
+      setValue('phone', order.phone)
+      setValue('shift', order.shift)
+      setValue('observations', order.observations || '')
+      setValue('addressInfo', {
+        ...order.addressInfo,
+        complement: order.addressInfo.complement || ''
+      })
+    }
+  }, [getOrderById.data])
 
   return {
     isZipcodeInvalid,

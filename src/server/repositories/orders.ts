@@ -71,6 +71,18 @@ export const updateOrdersStatusByIds = async (ids: string[]) => {
   }
 }
 
+export const fetchOrderById = async (id: string) => {
+  const order = await db.order.findFirst({
+    where: {id}
+  })
+
+  return {
+    status: 200,
+    order,
+    message: 'Pedido encontrado'
+  }
+}
+
 export const fetchOrdersByUserId = async ({
   userId,
   page,

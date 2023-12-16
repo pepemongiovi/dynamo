@@ -2,7 +2,7 @@ import Layout from '@/layouts/Layout'
 import {Stack} from '@mui/system'
 import {FC} from 'react'
 import FormInput from '@/components/common/FormInput'
-import useNewOrder from './useNewOrder'
+import useOrderDetails from './useOrderDetails'
 import {Divider, Grid, Typography} from '@mui/material'
 import SelectInput from '@/components/common/SelectInput'
 import SelectOfferModal from '@/components/offers/SelectOfferModal/SelectOfferModal'
@@ -13,7 +13,11 @@ import Button from '@/components/common/Button'
 import {Add} from '@mui/icons-material'
 import OfferAccordion from '@/components/offers/OfferAccordion'
 
-const NewOrder: FC = () => {
+interface OrderDetailsProps {
+  editMode?: boolean
+  readOnly?: boolean
+}
+const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
   const {
     control,
     shiftOpts,
@@ -31,7 +35,7 @@ const NewOrder: FC = () => {
     handleRemoveOffer,
     onEditOffer,
     onSubmit
-  } = useNewOrder()
+  } = useOrderDetails()
 
   return (
     <Layout gap={5} direction="row">
@@ -41,6 +45,7 @@ const NewOrder: FC = () => {
         <FormInput
           name="name"
           control={control}
+          disabled={!!readOnly}
           label="Nome completo"
           placeholder={getPlaceholder('nome completo')}
           rules={{required: 'Obrigatório'}}
@@ -51,6 +56,7 @@ const NewOrder: FC = () => {
             <FormInput
               name="phone"
               control={control}
+              disabled={!!readOnly}
               inputMask="(99) 99999-9999"
               label="Whatsapp"
               placeholder={getPlaceholder('telefone')}
@@ -62,6 +68,7 @@ const NewOrder: FC = () => {
             <DateFormInput
               name="date"
               control={control}
+              disabled={!!readOnly}
               label="Data de Entrega"
               rules={{required: 'Obrigatório'}}
             />
@@ -72,6 +79,7 @@ const NewOrder: FC = () => {
               label="Turno"
               placeholder={getPlaceholder('turno', false, 'Selecione')}
               control={control}
+              disabled={!!readOnly}
               options={shiftOpts.map((shift) => ({
                 value: shift.value,
                 label: shift.label
@@ -89,6 +97,7 @@ const NewOrder: FC = () => {
               name="addressInfo.zipcode"
               error={(isZipcodeInvalid ? 'CEP inválido' : '') as any}
               control={control}
+              disabled={!!readOnly}
               inputMask="99999-999"
               label="CEP"
               placeholder={getPlaceholder('CEP')}
@@ -138,6 +147,7 @@ const NewOrder: FC = () => {
               name="addressInfo.number"
               type="number"
               control={control}
+              disabled={!!readOnly}
               label="Número"
               placeholder={getPlaceholder('número')}
               rules={{required: 'Obrigatório'}}
@@ -150,6 +160,7 @@ const NewOrder: FC = () => {
             <FormInput
               name="addressInfo.district"
               control={control}
+              disabled={!!readOnly}
               label="Bairro"
               placeholder={getPlaceholder('bairro')}
               rules={{required: 'Obrigatório'}}
@@ -160,6 +171,7 @@ const NewOrder: FC = () => {
             <FormInput
               name="addressInfo.complement"
               control={control}
+              disabled={!!readOnly}
               label="Complemento"
               placeholder={getPlaceholder('complemento')}
             />
@@ -172,6 +184,7 @@ const NewOrder: FC = () => {
           containerSx={{pt: 2}}
           name="observations"
           control={control}
+          disabled={!!readOnly}
           label="Observações"
           placeholder="Digite as observações"
         />
@@ -230,4 +243,4 @@ const NewOrder: FC = () => {
   )
 }
 
-export default NewOrder
+export default OrderDetails

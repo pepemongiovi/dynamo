@@ -1,4 +1,4 @@
-import {getVariantLabel} from '@/features/new-order/useNewOrder'
+import {getVariantLabel} from '@/features/order/order-details/useOrderDetails'
 import useLoader from '@/hooks/useLoader'
 import trpc from '@/utils/trpc'
 import {Offer, OfferDetails, Product, Variant} from '@prisma/client'

@@ -12,7 +12,7 @@ const Dashboard: FC = () => {
   const router = useRouter()
   const {control, userId} = useDashboard()
 
-  const goToOrderRegisterForm = () => router.push('/app/new-order')
+  const goToOrderRegisterForm = () => router.push('/app/order/new')
 
   return (
     <Layout sx={{width: '100%'}} gap={4} align="start">

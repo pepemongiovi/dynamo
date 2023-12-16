@@ -5,6 +5,7 @@ import {createOrder} from '../controllers/orders'
 import {getOrdersByUserId} from '../controllers/orders/getOrdersByUserId'
 import {updateOrder} from '../controllers/orders/updateOrder'
 import {updateOrdersStatus} from '../controllers/orders/updateOrdersStatus'
+import {getOrderById} from '../controllers/orders/getOrderById'
 
 export default createRouter().merge(
   createProtectedRouter()
@@ -31,10 +32,18 @@ export default createRouter().merge(
         }
       }
     })
-    .query('test', {
+
+    .query('getById', {
+      input: z.object({
+        id: z.string()
+      }),
       async resolve({ctx, input}) {
-        console.log('hmmm')
-        return {error: null, success: true}
+        const response = await getOrderById(input.id)
+        return {
+          error: null,
+          success: true,
+          order: response.order
+        }
       }
     })
     .mutation('update', {

@@ -8,7 +8,7 @@ import FormInput from '../../common/FormInput'
 import {getPlaceholder} from '@/utils/format'
 import {Offer, OfferDetails, Product, Variant} from '@prisma/client'
 import Button from '../../common/Button'
-import {getVariantLabel} from '@/features/new-order/useNewOrder'
+import {getVariantLabel} from '@/features/order/order-details/useOrderDetails'
 import {Add, CheckCircleOutlineSharp, Remove} from '@mui/icons-material'
 import {OfferData} from '@/validation'
 

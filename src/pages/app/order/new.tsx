@@ -1,4 +1,4 @@
-import NewOrder from '@/features/new-order/NewOrder'
+import OrderDetails from '@/features/order/order-details/OrderDetails'
 import {requireAuth} from '@/server/auth/requireAuth'
 
 export const getServerSideProps = requireAuth(async (ctx: any) => {
@@ -6,7 +6,7 @@ export const getServerSideProps = requireAuth(async (ctx: any) => {
 })
 
 const NewOrderPage: React.FC<{user: any}> = ({user}) => {
-  return <NewOrder />
+  return <OrderDetails />
 }
 
 export default NewOrderPage
