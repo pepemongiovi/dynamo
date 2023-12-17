@@ -54,11 +54,10 @@ const OfferAccordion = ({
                     gap: 0.7
                   }}
                 >
-                  <NumericCircle
-                    bgcolor="background.paper"
-                    textColor="primary.main"
-                    amount={amount}
-                  />
+                  <Typography
+                    color="primary.main"
+                    sx={{width: 25}}
+                  >{`(${amount})`}</Typography>
                   {name}
                 </Typography>
               ))}
