@@ -43,25 +43,19 @@ const OfferAccordion = ({
             justifyContent="space-between"
             alignItems="start"
           >
-            <Stack spacing={0.5}>
-              {offer.variantsInfo.map(({name, amount}) => (
-                <Typography
-                  fontSize={15}
-                  color="placeholder"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.7
-                  }}
-                >
-                  <Typography
-                    color="primary.main"
-                    sx={{width: 25}}
-                  >{`(${amount})`}</Typography>
-                  {name}
-                </Typography>
+            <Stack spacing={0.5} mt="3px">
+              {offer.variantsInfo.map(({name, amount}, idx) => (
+                <Stack direction="row" key={idx} alignItems="center">
+                  <Typography color="primary.main" sx={{width: 27}}>
+                    {`(${amount})`}
+                  </Typography>
+                  <Typography fontSize={15} color="placeholder">
+                    {name}
+                  </Typography>
+                </Stack>
               ))}
             </Stack>
+
             {!readOnly && (
               <Stack
                 direction="row"

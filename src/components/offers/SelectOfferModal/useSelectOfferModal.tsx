@@ -10,6 +10,8 @@ type UseSelectOfferModal = {
   onSubmit: (data: OfferData) => void
   products: Product[]
   offer?: OfferData
+  editMode?: boolean
+  open: boolean
   onClose: () => void
 }
 
@@ -17,7 +19,9 @@ const useSelectOfferModal = ({
   onSubmit,
   onClose,
   products,
-  offer
+  offer,
+  open,
+  editMode
 }: UseSelectOfferModal) => {
   const getOffersByProductId = trpc.useMutation('offers.getByProductId')
   const getVariantsByProductIds = trpc.useMutation('variants.getByProductIds')
@@ -25,7 +29,7 @@ const useSelectOfferModal = ({
 
   const [variants, setVariants] = useState<Variant[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
-  const [initialEditLoaded, setInitialEditLoaded] = useState(false)
+  const [initialDataLoaded, setInitialDataLoaded] = useState(!offer)
 
   const {
     handleSubmit,
@@ -66,6 +70,7 @@ const useSelectOfferModal = ({
   )
 
   const selectedVariants = useMemo(() => {
+    console.log(11, variants, variantIds)
     return variants
       .filter(({id}) => variantIds?.find(({variantId}) => variantId === id))
       .map((variant) => ({
@@ -78,7 +83,7 @@ const useSelectOfferModal = ({
           (products.find(({id}) => id === variant.productId) as Product)?.name
         )
       }))
-  }, [variantIds])
+  }, [variantIds, selectedOfferId, selectedProductId, variants])
 
   const offerProductAmounts = useMemo(() => {
     if (!selectedOffer) return []
@@ -99,7 +104,7 @@ const useSelectOfferModal = ({
           0
         )
     }))
-  }, [variantIds])
+  }, [variantIds, selectedOfferId, selectedProductId, variants])
 
   const isOfferValid = useMemo(
     () =>
@@ -116,7 +121,7 @@ const useSelectOfferModal = ({
 
   const cleanForm = () => {
     reset()
-    setInitialEditLoaded(false)
+    setInitialDataLoaded(false)
     setVariants([])
     setOffers([])
   }
@@ -157,7 +162,7 @@ const useSelectOfferModal = ({
         console.error(err)
       }
     }),
-    [variantIds]
+    [variantIds, selectedOfferId, selectedProductId, variants]
   )
 
   const handleClose = () => {
@@ -169,7 +174,7 @@ const useSelectOfferModal = ({
     const res = await getOffersByProductId.mutateAsync({
       productId: productId || selectedProductId
     })
-    setOffers(res.offers as Offer[])
+    setOffers((res.offers as Offer[]) || [])
 
     return res.offers
   }
@@ -248,15 +253,16 @@ const useSelectOfferModal = ({
   }
 
   useEffect(() => {
-    if (selectedProductId && !(offer && !initialEditLoaded)) {
+    if (selectedProductId && (!offer || initialDataLoaded)) {
       setValue('offerId', '')
       setValue('variantId', '')
+      setValue('variantIds', [])
       fetchOffers()
     }
   }, [selectedProductId])
 
   useEffect(() => {
-    if (selectedOffer && !(offer && !initialEditLoaded)) {
+    if (selectedOffer && (!offer || initialDataLoaded)) {
       setValue('variantId', '')
       setValue('variantIds', [])
       fetchVariants()
@@ -265,7 +271,7 @@ const useSelectOfferModal = ({
 
   useEffect(() => {
     if (
-      !(offer && !initialEditLoaded) &&
+      !(offer && !initialDataLoaded) &&
       !variantsToShow.find((variant) => variant.id === selectedVariantId)
     ) {
       setValue('variantId', variantsToShow[0]?.id || '')
@@ -274,6 +280,10 @@ const useSelectOfferModal = ({
 
   const loadOfferData = async () => {
     if (offer) {
+      setValue('productId', offer.productId)
+      setValue('offerId', offer.offerId)
+      setValue('variantIds', offer.variantsInfo)
+
       const offers = await fetchOffers(offer.productId)
       offers &&
         (await fetchVariants(
@@ -281,17 +291,18 @@ const useSelectOfferModal = ({
             .find(({id}) => id === offer.offerId)
             ?.products.map((product) => product.productId) as string[]
         ))
-      setValue('productId', offer.productId)
-      setValue('offerId', offer.offerId)
-      setValue('variantIds', offer.variantsInfo)
 
-      setTimeout(() => setInitialEditLoaded(true), 1000)
+      setInitialDataLoaded(true)
     }
   }
 
   useEffect(() => {
-    loadOfferData()
-  }, [offer])
+    if (open && offer) {
+      loadOfferData()
+    } else if (!open) {
+      cleanForm()
+    }
+  }, [open])
 
   return {
     control,

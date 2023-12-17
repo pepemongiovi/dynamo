@@ -119,6 +119,7 @@ const OrderSummary = ({
     Object.values(stackedOffers).map(
       (offers, idx) => (
         <CardRow
+          key={idx}
           amount={offers.length}
           label={offers[0]?.name ?? ''}
           value={formatMoney(getOffersTotalPrice(offers))}

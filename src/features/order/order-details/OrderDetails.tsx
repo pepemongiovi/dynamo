@@ -34,6 +34,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
     handleNewOffer,
     handleRemoveOffer,
     onEditOffer,
+    onAddNewOffer,
     onSubmit
   } = useOrderDetails()
 
@@ -197,11 +198,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
           </Typography>
 
           {!readOnly && (
-            <Button
-              size="sm"
-              startIcon={<Add />}
-              onClick={() => setNewOfferModalOpened(true)}
-            >
+            <Button size="sm" startIcon={<Add />} onClick={onAddNewOffer}>
               Adicionar Oferta
             </Button>
           )}
@@ -215,6 +212,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
           ) : (
             offers.map((offer, idx) => (
               <OfferAccordion
+                key={idx}
                 offer={offer}
                 onEdit={onEditOffer}
                 onRemove={handleRemoveOffer}
@@ -228,11 +226,14 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
         <SelectOfferModal
           offer={editingOfferIdx !== null ? offers[editingOfferIdx] : undefined}
           open={newOfferModalOpened}
-          onClose={() => setNewOfferModalOpened(false)}
+          onClose={() => {
+            setNewOfferModalOpened(false)
+          }}
           onSubmit={
             editingOfferIdx !== null ? handleOfferUpdate : handleNewOffer
           }
           products={products}
+          editMode={!!editMode}
         />
       </Stack>
 

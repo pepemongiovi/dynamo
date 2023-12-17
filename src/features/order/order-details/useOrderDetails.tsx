@@ -50,6 +50,12 @@ export default function useOrderDetails() {
     ['orders.getById', {id: (id as string) || ''}],
     {enabled: !!id}
   )
+  console.log(id)
+
+  const onAddNewOffer = () => {
+    setEditingOfferIdx(null)
+    setNewOfferModalOpened(true)
+  }
 
   const onEditOffer = (offerIdx: number) => {
     setEditingOfferIdx(offerIdx)
@@ -250,6 +256,7 @@ export default function useOrderDetails() {
     editingOfferIdx,
     isLoading,
     isValid,
+    onAddNewOffer,
     handleOfferUpdate,
     onEditOffer,
     setNewOfferModalOpened,

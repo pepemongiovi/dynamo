@@ -15,6 +15,7 @@ import {OfferData} from '@/validation'
 type NewVariantModalProps = Omit<ModalProps, 'children' | 'onSubmit'> & {
   offer?: OfferData
   products: Product[]
+  editMode?: boolean
   onSubmit: (data: OfferData) => void
 }
 
@@ -22,6 +23,7 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
   products,
   open,
   offer,
+  editMode,
   onClose,
   onSubmit
 }) => {
@@ -43,8 +45,15 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
     onSubmit,
     products,
     offer,
+    editMode,
+    open,
     onClose
   })
+  console.log('offer', offer)
+
+  console.log('variants', variants)
+  console.log('selectedVariants', selectedVariants)
+  console.log('selectedOfferId', selectedOfferId)
 
   return (
     <Modal
@@ -117,8 +126,8 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
           )}
 
           <Grid container gap={2}>
-            {offerProductAmounts.map(({product, selected, total}) => (
-              <Grid item>
+            {offerProductAmounts.map(({product, selected, total}, idx) => (
+              <Grid item key={idx}>
                 <Stack spacing={0.8} direction="row" alignItems="center">
                   <CheckCircleOutlineSharp
                     sx={{
@@ -139,10 +148,15 @@ const SelectOfferModal: FC<NewVariantModalProps> = ({
           </Grid>
 
           <Stack spacing={1}>
-            {selectedVariants.map(({id, amount, label}) => {
+            {selectedVariants.map(({id, amount, label}, idx) => {
               const incrementEnabled = variantIncrementEnabled(id)
               return (
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack
+                  key={idx}
+                  direction="row"
+                  alignItems="center"
+                  spacing={1}
+                >
                   <Stack
                     direction="row"
                     justifyContent="space-between"

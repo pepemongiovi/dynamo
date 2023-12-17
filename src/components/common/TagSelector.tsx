@@ -19,8 +19,14 @@ const TagSelector: FC<TagSelectorProps> = ({
   return (
     <Box sx={{display: 'inline-flex', gap: 2}}>
       <Tag label={addBtnLabel} onClick={openModal} icon={<Add />} />
-      {tags.map((tag) => (
-        <Tag label={tag} onClick={() => onRemove(tag)} isDeletable filled />
+      {tags.map((tag, idx) => (
+        <Tag
+          key={idx}
+          label={tag}
+          onClick={() => onRemove(tag)}
+          isDeletable
+          filled
+        />
       ))}
     </Box>
   )
