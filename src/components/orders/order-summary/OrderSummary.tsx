@@ -67,6 +67,7 @@ const CardRow = ({
 
 const OrderSummary = ({
   onSubmit,
+  readOnly,
   isLoading,
   isValid,
   offers
@@ -74,6 +75,7 @@ const OrderSummary = ({
   offers: OfferData[]
   isLoading: boolean
   isValid: boolean
+  readOnly: boolean
   onSubmit: () => void
 }) => {
   const {handleSubmit} = useOrderSummary()
@@ -159,14 +161,17 @@ const OrderSummary = ({
             hideDivider
           />
         </CardContainer>
-        <Button
-          sx={{mt: 4}}
-          onClick={onSubmit}
-          disabled={!offers.length || !isValid}
-          loading={isLoading}
-        >
-          Agendar Pedido
-        </Button>
+
+        {!readOnly && (
+          <Button
+            sx={{mt: 4}}
+            onClick={onSubmit}
+            disabled={!offers.length || !isValid}
+            loading={isLoading}
+          >
+            Agendar Pedido
+          </Button>
+        )}
       </Stack>
     </Tile>
   )

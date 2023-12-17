@@ -12,15 +12,17 @@ import Button from '../common/Button'
 import NumericCircle from '../common/NumericCircle'
 
 const OfferAccordion = ({
+  idx,
+  readOnly,
   offer,
   onEdit,
-  onRemove,
-  idx
+  onRemove
 }: {
   offer: OfferData
   onEdit: (idx: number) => void
   onRemove: (idx: number) => void
   idx: number
+  readOnly: boolean
 }) => {
   return (
     <Stack direction="row" spacing={1} alignItems="start">
@@ -61,19 +63,25 @@ const OfferAccordion = ({
                 </Typography>
               ))}
             </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="start"
-              spacing={1}
-            >
-              <Button size="xs" variant="outlined" onClick={() => onEdit(idx)}>
-                Editar
-              </Button>
-              <Button size="xs" danger onClick={() => onRemove(idx)}>
-                Excluir
-              </Button>
-            </Stack>
+            {!readOnly && (
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="start"
+                spacing={1}
+              >
+                <Button
+                  size="xs"
+                  variant="outlined"
+                  onClick={() => onEdit(idx)}
+                >
+                  Editar
+                </Button>
+                <Button size="xs" danger onClick={() => onRemove(idx)}>
+                  Excluir
+                </Button>
+              </Stack>
+            )}
           </Stack>
         </AccordionDetails>
       </Accordion>

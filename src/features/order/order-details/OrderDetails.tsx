@@ -17,7 +17,7 @@ interface OrderDetailsProps {
   editMode?: boolean
   readOnly?: boolean
 }
-const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
+const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
   const {
     control,
     shiftOpts,
@@ -45,7 +45,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
         <FormInput
           name="name"
           control={control}
-          disabled={!!readOnly}
+          disabled={readOnly}
           label="Nome completo"
           placeholder={getPlaceholder('nome completo')}
           rules={{required: 'Obrigatório'}}
@@ -56,7 +56,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
             <FormInput
               name="phone"
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               inputMask="(99) 99999-9999"
               label="Whatsapp"
               placeholder={getPlaceholder('telefone')}
@@ -68,7 +68,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
             <DateFormInput
               name="date"
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               label="Data de Entrega"
               rules={{required: 'Obrigatório'}}
             />
@@ -79,7 +79,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
               label="Turno"
               placeholder={getPlaceholder('turno', false, 'Selecione')}
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               options={shiftOpts.map((shift) => ({
                 value: shift.value,
                 label: shift.label
@@ -97,7 +97,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
               name="addressInfo.zipcode"
               error={(isZipcodeInvalid ? 'CEP inválido' : '') as any}
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               inputMask="99999-999"
               label="CEP"
               placeholder={getPlaceholder('CEP')}
@@ -147,7 +147,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
               name="addressInfo.number"
               type="number"
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               label="Número"
               placeholder={getPlaceholder('número')}
               rules={{required: 'Obrigatório'}}
@@ -160,7 +160,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
             <FormInput
               name="addressInfo.district"
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               label="Bairro"
               placeholder={getPlaceholder('bairro')}
               rules={{required: 'Obrigatório'}}
@@ -171,7 +171,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
             <FormInput
               name="addressInfo.complement"
               control={control}
-              disabled={!!readOnly}
+              disabled={readOnly}
               label="Complemento"
               placeholder={getPlaceholder('complemento')}
             />
@@ -184,7 +184,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
           containerSx={{pt: 2}}
           name="observations"
           control={control}
-          disabled={!!readOnly}
+          disabled={readOnly}
           label="Observações"
           placeholder="Digite as observações"
         />
@@ -196,13 +196,15 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
             Ofertas escolhidas
           </Typography>
 
-          <Button
-            size="sm"
-            startIcon={<Add />}
-            onClick={() => setNewOfferModalOpened(true)}
-          >
-            Adicionar Oferta
-          </Button>
+          {!readOnly && (
+            <Button
+              size="sm"
+              startIcon={<Add />}
+              onClick={() => setNewOfferModalOpened(true)}
+            >
+              Adicionar Oferta
+            </Button>
+          )}
         </Stack>
 
         <Stack spacing={1.5}>
@@ -217,6 +219,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
                 onEdit={onEditOffer}
                 onRemove={handleRemoveOffer}
                 idx={idx}
+                readOnly={readOnly}
               />
             ))
           )}
@@ -238,6 +241,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly}) => {
         isLoading={isLoading}
         offers={offers}
         isValid={isValid}
+        readOnly={readOnly}
       />
     </Layout>
   )

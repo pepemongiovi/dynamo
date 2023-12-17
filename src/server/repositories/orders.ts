@@ -1,7 +1,7 @@
 import {ObjectId} from 'mongodb'
 import db from '../db'
 import {ICreateOrder, IUpdateOrder, IGetOrdersByUserId} from '@/validation'
-import {Order, OrderStatus} from '@prisma/client'
+import {Offer, OfferDetails, Order, OrderStatus, Variant} from '@prisma/client'
 
 export const createNewOrder = async (input: ICreateOrder) => {
   const {offers, ...body} = input
@@ -73,12 +73,59 @@ export const updateOrdersStatusByIds = async (ids: string[]) => {
 
 export const fetchOrderById = async (id: string) => {
   const order = await db.order.findFirst({
-    where: {id}
+    where: {id},
+    include: {offers: true}
   })
+
+  if (!order) {
+    throw new Error(`Pedido não encontrado.`)
+  }
+
+  let orderData = {...order}
+
+  for (let i = 0; i < orderData.offers.length; i++) {
+    const offerDetails = orderData.offers[i]
+    if (offerDetails) {
+      const offer = await db.offer.findFirst({
+        where: {id: offerDetails.offerId}
+      })
+
+      orderData.offers[i] = {
+        ...offerDetails,
+        ...offer
+      } as OfferDetails & Offer
+    }
+  }
+
+  const variantIds = orderData.offers.reduce((allVariantIds, offer) => {
+    const variantIdsNotAdded = offer.variantIds
+      .map((variant) => variant.variantId)
+      .filter((id) => !allVariantIds.includes(id))
+
+    return [...allVariantIds, ...variantIdsNotAdded]
+  }, [] as string[])
+
+  const variants: Variant[] = []
+
+  for (let i = 0; i < variantIds.length; i++) {
+    const variant = await db.variant.findFirst({
+      where: {id: variantIds[i]},
+      include: {product: true}
+    })
+    variants.push(variant as Variant)
+  }
+
+  // orderData = orderData.offers.map((offer) => ({
+  //   ...offer,
+  //   variants: variantIds.map((variantId) =>
+  //     variants.find((variant) => variant.id === variantId)
+  //   ) as Variant[]
+  // }))
 
   return {
     status: 200,
-    order,
+    variants,
+    order: {...orderData, offers: orderData.offers as (OfferDetails & Offer)[]},
     message: 'Pedido encontrado'
   }
 }

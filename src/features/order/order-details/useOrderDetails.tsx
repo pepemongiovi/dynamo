@@ -202,8 +202,9 @@ export default function useOrderDetails() {
 
   useEffect(() => {
     const order = getOrderById.data?.order
-
-    if (order) {
+    const variants = getOrderById.data?.variants
+    console.log(order, variants)
+    if (order && variants) {
       setValue('name', order.name)
       setValue('date', order.date)
       setValue('phone', order.phone)
@@ -213,6 +214,28 @@ export default function useOrderDetails() {
         ...order.addressInfo,
         complement: order.addressInfo.complement || ''
       })
+
+      setValue(
+        'offers',
+        order.offers.map((offer) => ({
+          name: offer.name,
+          offerId: offer.offerId,
+          productId: offer.products[0]?.productId || '',
+          variantsInfo: (offer.variantIds
+            .map((variant) => {
+              const data = variants.find(({id}) => id === variant.variantId)
+              if (!data) return null
+
+              return {
+                variantId: data.id,
+                name: (data as any).product.name,
+                amount: variant.amount,
+                price: data.price
+              }
+            })
+            .filter((offer) => !!offer) || []) as any
+        }))
+      )
     }
   }, [getOrderById.data])
 

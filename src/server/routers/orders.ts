@@ -39,9 +39,11 @@ export default createRouter().merge(
       }),
       async resolve({ctx, input}) {
         const response = await getOrderById(input.id)
+
         return {
           error: null,
           success: true,
+          variants: response.variants,
           order: response.order
         }
       }
