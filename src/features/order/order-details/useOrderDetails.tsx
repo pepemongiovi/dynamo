@@ -31,13 +31,14 @@ export const getVariantLabel = (variant: Variant, productName: string) => {
   return `${productName} - ${variantLabel}`
 }
 
-export default function useOrderDetails() {
+export default function useOrderDetails(editMode: boolean) {
   const router = useRouter()
   const {id} = router.query
 
   const {data} = useSession()
   const {isLoading, ...loader} = useLoader()
 
+  const [orderToEditFetched, setOrderToEditFetched] = useState(false)
   const [isZipcodeInvalid, setIsZipcodeInvalid] = useState(false)
   const [newOfferModalOpened, setNewOfferModalOpened] = useState(false)
   const [editingOfferIdx, setEditingOfferIdx] = useState<number | null>(null)
@@ -45,12 +46,15 @@ export default function useOrderDetails() {
   const [products, setProducts] = useState<(Product & {offers: Offer[]})[]>([])
 
   const getUserSubscriptions = trpc.useMutation(['subscriptions.getByUserId'])
-  const createOrder = trpc.useMutation(['orders.create'])
+  const {isLoading: isCreatingOrder, mutateAsync: createOrder} =
+    trpc.useMutation(['orders.create'])
   const getOrderById = trpc.useQuery(
     ['orders.getById', {id: (id as string) || ''}],
     {enabled: !!id}
   )
-  console.log(id)
+
+  const {isLoading: isUpdatingOrder, mutateAsync: updateOrder} =
+    trpc.useMutation(['orders.update'])
 
   const onAddNewOffer = () => {
     setEditingOfferIdx(null)
@@ -69,12 +73,14 @@ export default function useOrderDetails() {
     district: '',
     city: '',
     state: '',
-    complement: ''
+    complement: '',
+    status: ''
   }
 
   const {
     handleSubmit,
     formState: {errors, isValid},
+    reset,
     getValues,
     setValue,
     clearErrors,
@@ -86,16 +92,15 @@ export default function useOrderDetails() {
       offers: [] as OfferData[],
       phone: '',
       observations: '',
-      addressInfo: emptyAddress,
+      addressInfo: emptyAddress as any,
       shift: '',
+      status: '',
       date: new Date()
     }
   })
 
   const offers = watch('offers')
   const zipcode = watch('addressInfo.zipcode')
-
-  console.log('offers', offers)
 
   const debouncedSearchTerm = useDebounce(zipcode, 800)
 
@@ -156,28 +161,46 @@ export default function useOrderDetails() {
   const onSubmit = useCallback(
     loader.action(async ({offers, ...newOrder}: ICreateOrder) => {
       try {
-        const res = await createOrder.mutateAsync({
-          ...newOrder,
-          offers: offers.map((offer) => ({
-            ...offer,
-            variantsInfo: offer.variantsInfo.map(({variantId, amount}) => ({
-              variantId,
-              amount
-            }))
-          })),
-          userId: data?.user.id as string,
-          addressInfo: {
-            ...newOrder.addressInfo,
-            number: Number(newOrder.addressInfo.number)
+        const updatedAddress = {
+          ...newOrder.addressInfo,
+          number: Number(newOrder.addressInfo.number)
+        }
+        const updatedOffers = offers.map((offer) => ({
+          ...offer,
+          variantsInfo: offer.variantsInfo.map(({variantId, amount}) => ({
+            variantId,
+            amount
+          }))
+        }))
+
+        let res
+
+        if (editMode && id) {
+          res = await updateOrder({
+            id: id as string,
+            ...newOrder,
+            offers: updatedOffers,
+            addressInfo: updatedAddress
+          })
+        } else {
+          res = await createOrder({
+            ...newOrder,
+            offers: updatedOffers,
+            userId: data?.user.id as string,
+            addressInfo: updatedAddress
+          })
+        }
+
+        if (res.success) {
+          toast.success(
+            `Seu pedido foi ${editMode ? 'atualizado' : 'agendado'}!`
+          )
+          if (!id) {
+            reset()
           }
-        })
-        if (res.order?.id) {
-          toast.success('Seu pedido foi agendado!')
-          // reset()
         } else {
           throw new Error()
         }
-        console.log(3, res)
         clearErrors()
       } catch (err) {
         toast.error('Ocorreu um erro ao agendar seu pedido. Tente mais tarde')
@@ -203,18 +226,23 @@ export default function useOrderDetails() {
   }, [data])
 
   useEffect(() => {
-    autofillAddress()
+    if (!editMode || (editMode && orderToEditFetched)) {
+      autofillAddress()
+    } else if (zipcode) {
+      setOrderToEditFetched(true)
+    }
   }, [debouncedSearchTerm])
 
   useEffect(() => {
     const order = getOrderById.data?.order
     const variants = getOrderById.data?.variants
-    console.log(order, variants)
+
     if (order && variants) {
       setValue('name', order.name)
       setValue('date', order.date)
       setValue('phone', order.phone)
       setValue('shift', order.shift)
+      setValue('status', order.status)
       setValue('observations', order.observations || '')
       setValue('addressInfo', {
         ...order.addressInfo,
@@ -246,6 +274,7 @@ export default function useOrderDetails() {
   }, [getOrderById.data])
 
   return {
+    id,
     isZipcodeInvalid,
     control,
     shiftOpts,
@@ -255,7 +284,7 @@ export default function useOrderDetails() {
     newOfferModalOpened,
     editingOfferIdx,
     isLoading,
-    isValid,
+    isValid: editMode ? !Object.keys(errors).length : isValid,
     onAddNewOffer,
     handleOfferUpdate,
     onEditOffer,

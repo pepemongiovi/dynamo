@@ -68,6 +68,7 @@ const CardRow = ({
 const OrderSummary = ({
   onSubmit,
   readOnly,
+  editMode,
   isLoading,
   isValid,
   offers
@@ -76,6 +77,7 @@ const OrderSummary = ({
   isLoading: boolean
   isValid: boolean
   readOnly: boolean
+  editMode: boolean
   onSubmit: () => void
 }) => {
   const {handleSubmit} = useOrderSummary()
@@ -170,7 +172,7 @@ const OrderSummary = ({
             disabled={!offers.length || !isValid}
             loading={isLoading}
           >
-            Agendar Pedido
+            {`${editMode ? 'Editar' : 'Agendar'} Pedido`}
           </Button>
         )}
       </Stack>

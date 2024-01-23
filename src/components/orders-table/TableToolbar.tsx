@@ -65,7 +65,9 @@ function TableToolbar({
           <Stack
             direction="row"
             spacing={1}
-            onClick={() => router.push(`/app/orders/${selectedOrderIds[0]}`)}
+            onClick={() =>
+              router.push(`/app/order/${selectedOrderIds[0]}/edit`)
+            }
             sx={{mr: 1, cursor: isUpdatingOrders ? 'default' : 'pointer'}}
           >
             {numSelected === 1 && (

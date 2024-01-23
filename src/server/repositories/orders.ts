@@ -36,7 +36,7 @@ export const createNewOrder = async (input: ICreateOrder) => {
 }
 
 export const patchOrder = async (input: IUpdateOrder) => {
-  const {id, offers, ...updatedOrder} = input
+  const {id, offers, ...updatedOrder} = {...input, offers: input.offers || []}
 
   const orderExists = await db.order.findFirst({
     where: {id}
@@ -51,6 +51,16 @@ export const patchOrder = async (input: IUpdateOrder) => {
     data: updatedOrder as Order
   })
 
+  await db.offerDetails.deleteMany({where: {orderId: id}})
+
+  await db.offerDetails.createMany({
+    data: offers?.map((details) => ({
+      offerId: details.offerId,
+      orderId: id,
+      variantIds: details.variantsInfo
+    }))
+  })
+
   return {
     status: 200,
     order: null as any,
@@ -58,7 +68,7 @@ export const patchOrder = async (input: IUpdateOrder) => {
   }
 }
 
-export const updateOrdersStatusByIds = async (ids: string[]) => {
+export const cancelOrdersByIds = async (ids: string[]) => {
   await db.order.updateMany({
     where: {id: {in: ids}},
     data: {status: OrderStatus.canceled}

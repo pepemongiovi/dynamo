@@ -13,8 +13,8 @@ export default function useOrdersTable({userId}: {userId?: string}) {
   const [selectedOrders, setSelectedOrders] = React.useState<string[]>([])
   const [ordersToCancel, setOrdersToCancel] = useState<string[]>([])
 
-  const {isLoading: isUpdatingOrders, mutateAsync: updateOrdersStatus} =
-    trpc.useMutation(['orders.updateOrdersStatus'])
+  const {isLoading: isUpdatingOrders, mutateAsync: cancelOrdersByIds} =
+    trpc.useMutation(['orders.cancelOrdersByIds'])
 
   const {
     handleSubmit,
@@ -66,7 +66,9 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     [orders, page, pageSize]
   )
 
-  const handleEditOrder = (id: string) => router.push(`/app/orders/${id}`)
+  const handleEditOrder = (id: string) => router.push(`/app/order/${id}/edit`)
+  const handleViewOrder = (id: string) => router.push(`/app/order/${id}/view`)
+
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -125,7 +127,7 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     const orderIds = ids || selectedOrders
     setOrdersToCancel(orderIds)
 
-    await updateOrdersStatus(
+    await cancelOrdersByIds(
       {ids: orderIds},
       {
         onSuccess: () => {
@@ -156,6 +158,7 @@ export default function useOrdersTable({userId}: {userId?: string}) {
     selectedOrders,
     totalOrdersCount,
     handleEditOrder,
+    handleViewOrder,
     handleCancelOrders,
     handleChangePage,
     handleChangeRowsPerPage,

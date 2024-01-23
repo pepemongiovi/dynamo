@@ -28,6 +28,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
     totalOrdersCount,
     handleCancelOrders,
     handleEditOrder,
+    handleViewOrder,
     handleChangePage,
     handleChangeRowsPerPage,
     handleClick,
@@ -54,6 +55,7 @@ const OrdersTable = ({userId}: {userId?: string}) => {
                 handleClick={handleClick}
                 handleCancelOrders={handleCancelOrders}
                 handleEditOrder={(id: string) => handleEditOrder(id)}
+                handleViewOrder={(id: string) => handleViewOrder(id)}
                 isSelected={isSelected}
                 emptyRows={emptyRows}
                 orders={orders}

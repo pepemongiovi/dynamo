@@ -1,8 +1,8 @@
-import {updateOrdersStatusByIds} from '@/server/repositories'
+import {cancelOrdersByIds} from '@/server/repositories'
 
-export const updateOrdersStatus = async (ids: string[]) => {
+export const cancelOrders = async (ids: string[]) => {
   try {
-    const order = await updateOrdersStatusByIds(ids)
+    const order = await cancelOrdersByIds(ids)
     return order
   } catch (error) {
     console.error(error)

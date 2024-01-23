@@ -12,6 +12,7 @@ import DateFormInput from '@/components/common/DateFormInput'
 import Button from '@/components/common/Button'
 import {Add} from '@mui/icons-material'
 import OfferAccordion from '@/components/offers/OfferAccordion'
+import {OrderStatusEnum, orderStatusOpts} from '@/types/utils'
 
 interface OrderDetailsProps {
   editMode?: boolean
@@ -19,6 +20,7 @@ interface OrderDetailsProps {
 }
 const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
   const {
+    id,
     control,
     shiftOpts,
     statesOpts,
@@ -36,21 +38,44 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
     onEditOffer,
     onAddNewOffer,
     onSubmit
-  } = useOrderDetails()
+  } = useOrderDetails(!!editMode)
 
   return (
     <Layout gap={5} direction="row">
       {/* <Divider orientation="vertical" flexItem /> */}
 
       <Stack spacing={0.5} width="100%" py={2}>
-        <FormInput
-          name="name"
-          control={control}
-          disabled={readOnly}
-          label="Nome completo"
-          placeholder={getPlaceholder('nome completo')}
-          rules={{required: 'Obrigatório'}}
-        />
+        <Grid container spacing={2} width="100%">
+          <Grid item xs={id ? 8 : 12} sx={{pl: '0px !important'}}>
+            <FormInput
+              name="name"
+              control={control}
+              disabled={readOnly}
+              label="Nome completo"
+              placeholder={getPlaceholder('nome completo')}
+              rules={{required: 'Obrigatório'}}
+            />
+          </Grid>
+
+          {!!id && (
+            <Grid item xs={4}>
+              <SelectInput
+                name="status"
+                label="Status"
+                placeholder={getPlaceholder('status', false, 'Selecione')}
+                control={control}
+                disabled={readOnly}
+                options={
+                  orderStatusOpts.map((status) => ({
+                    value: status,
+                    label: OrderStatusEnum[status]
+                  })) as any
+                }
+                rules={{required: 'Obrigatório'}}
+              />
+            </Grid>
+          )}
+        </Grid>
 
         <Grid container spacing={2} width="100%">
           <Grid item xs={4} sx={{pl: '0px !important'}}>
@@ -243,6 +268,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({editMode, readOnly = false}) => {
         offers={offers}
         isValid={isValid}
         readOnly={readOnly}
+        editMode={!!editMode}
       />
     </Layout>
   )

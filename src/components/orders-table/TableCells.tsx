@@ -48,7 +48,8 @@ const TableCells = ({
   isSelected,
   handleClick,
   handleCancelOrders,
-  handleEditOrder
+  handleEditOrder,
+  handleViewOrder
 }: {
   orders: OrderData[]
   selectedOrders: string[]
@@ -59,6 +60,7 @@ const TableCells = ({
   handleClick: (name: string) => void
   handleCancelOrders: (orderIds: string[]) => void
   handleEditOrder: (id: string) => void
+  handleViewOrder: (id: string) => void
 }) => {
   const rowHeight = 76
 
@@ -192,11 +194,7 @@ const TableCells = ({
 
             {!selectedOrders.length && (
               <TableCell align="right">
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  onClick={() => handleEditOrder(order.id)}
-                >
+                <Stack direction="row" spacing={1}>
                   <Tooltip
                     title={
                       editOrderEnabled ? 'Alterar pedido' : 'Visualizar pedido'
@@ -208,9 +206,14 @@ const TableCells = ({
                       component={
                         editOrderEnabled ? EditNote : VisibilityTwoTone
                       }
-                      onClick={(e: any) =>
-                        editOrderEnabled ? cancelOrder(e, order.id) : {}
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (editOrderEnabled) {
+                          handleEditOrder(order.id)
+                        } else {
+                          handleViewOrder(order.id)
+                        }
+                      }}
                     />
                   </Tooltip>
 

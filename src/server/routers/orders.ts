@@ -4,7 +4,7 @@ import {createOrderSchema, updateOrderSchema} from '@/validation'
 import {createOrder} from '../controllers/orders'
 import {getOrdersByUserId} from '../controllers/orders/getOrdersByUserId'
 import {updateOrder} from '../controllers/orders/updateOrder'
-import {updateOrdersStatus} from '../controllers/orders/updateOrdersStatus'
+import {cancelOrders} from '../controllers/orders/updateOrdersStatus'
 import {getOrderById} from '../controllers/orders/getOrderById'
 
 export default createRouter().merge(
@@ -13,7 +13,7 @@ export default createRouter().merge(
       input: createOrderSchema,
       async resolve({ctx, input}) {
         const result = await createOrder(input)
-        return {...result}
+        return {...result, success: true}
       }
     })
     .query('getByUserId', {
@@ -55,12 +55,12 @@ export default createRouter().merge(
         return {error: null, success: true, order: response.order}
       }
     })
-    .mutation('updateOrdersStatus', {
+    .mutation('cancelOrdersByIds', {
       input: z.object({
         ids: z.array(z.string())
       }),
       async resolve({ctx, input}) {
-        await updateOrdersStatus(input.ids)
+        await cancelOrders(input.ids)
         return {error: null, success: true}
       }
     })
